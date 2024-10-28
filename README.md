@@ -1,0 +1,2 @@
+# GOS
+Gaming Optimization Script
