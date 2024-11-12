@@ -1,0 +1,69 @@
+What each of the services GOS is stopping or disabling does:
+
+AllJoyn Router Service - Enables communication between IoT devices.
+BITS (Background Intelligent Transfer Service) - Transfers files in the background for applications.
+BitLocker Drive Encryption Service - Manages BitLocker-encrypted drives.
+Bluetooth Support Service - Handles Bluetooth device connections.
+BthAvctpSvc - Supports Bluetooth audio and video control.
+CertPropSvc (Certificate Propagation) - Manages certificate properties for smart cards.
+Connected Devices Platform Service - Supports communication with connected devices.
+CscService (Offline Files) - Enables offline access to network files.
+DiagTrack (Connected User Experiences and Telemetry) - Collects diagnostic and usage data.
+Diagnostic Policy Service - Detects and resolves system issues.
+Distributed Link Tracking Client - Keeps track of linked files on network paths.
+Downloaded Maps Manager - Manages downloaded maps for offline use.
+DPS (Diagnostic Policy Service) - Identifies and diagnoses system issues.
+DusmSvc (Data Usage Service) - Tracks data usage for apps.
+Fax - Manages sending and receiving faxes.
+Function Discovery Provider Host - Publishes devices and resources on the network.
+Function Discovery Resource Publication - Enables device and resource sharing.
+Geolocation Service - Provides location information to applications.
+icssvc (Internet Connection Sharing) - Shares internet connections with other devices.
+LanmanServer (Server) - Enables file and print sharing.
+lmhosts (TCP/IP NetBIOS Helper) - Supports NetBIOS over TCP/IP.
+MapsBroker - Manages maps for location-based services.
+Microsoft iSCSI Initiator Service - Allows connection to iSCSI devices.
+Netlogon - Supports secure communication for domain logins.
+Offline Files - Provides offline access to network-stored files.
+Parental Controls - Manages user activity restrictions.
+Payments and NFC/SE Manager - Handles mobile payments and NFC services.
+Phone Service - Manages phone-related functions on Windows.
+PhoneSvc (Phone Service) - Another service for phone-related functions.
+Print Spooler - Manages print jobs and printer queues.
+Program Compatibility Assistant Service - Detects and resolves compatibility issues.
+RemoteRegistry - Allows remote access to the Windows registry.
+Retail Demo Service - Supports retail demo mode on Windows.
+RmSvc (Retail Manager Service) - Supports retail and app management features.
+SCardSvr (Smart Card Service) - Manages smart card reader operations.
+Secondary Logon - Allows running processes as another user.
+SessionEnv (Remote Desktop Configuration) - Supports Remote Desktop sessions.
+Smart Card - Provides support for smart card readers.
+Smart Card Device Enumeration Service - Enumerates smart card readers.
+Spooler - Manages print jobs for local and network printers.
+SSDPSRV (SSDP Discovery) - Enables device discovery on the network.
+stisvc (Windows Image Acquisition) - Manages image acquisition for scanners and cameras.
+Superfetch (SysMain) - Optimizes memory management to improve system performance.
+SysMain - Another name for Superfetch, memory optimization service.
+TabletInputService - Supports touch and pen input devices.
+TermService (Remote Desktop Services) - Enables remote desktop connections.
+Touch Keyboard and Handwriting Panel Service - Manages touch and handwriting inputs.
+UmRdpService (Remote Desktop Services UserMode Port Redirector) - Manages device redirection for RDP.
+UPnP Device Host - Enables network device discovery and communication.
+UsoSvc (Update Orchestrator Service) - Manages Windows updates scheduling.
+wercplsupport (Windows Error Reporting Service) - Reports application errors to Microsoft.
+WerSvc (Windows Error Reporting) - Collects and sends error reports.
+WbioSrvc (Windows Biometric Service) - Manages biometric devices like fingerprint readers.
+Windows Camera Frame Server - Streams video from cameras for applications.
+Windows Error Reporting Service - Collects diagnostic data on errors.
+Windows Image Acquisition (WIA) - Supports imaging devices like scanners.
+Windows Insider Service - Manages Insider Preview updates.
+Windows Media Player Network Sharing Service - Shares media with networked devices.
+Windows Search - Provides indexing and search for files.
+WpcMonSvc (Parental Controls) - Manages activity monitoring for parental controls.
+wscsvc (Windows Security Center) - Monitors and reports on security settings.
+Windows Update - Manages updates for Windows and other software.
+Xbox Accessory Management Service - Supports Xbox accessories on Windows.
+Xbox Live Auth Manager - Manages Xbox Live sign-in and authentication.
+Xbox Live Game Save - Manages Xbox Live cloud game saves.
+Xbox Live Networking Service - Supports Xbox Live network connections.
+
