@@ -72,8 +72,10 @@ if exist "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDel
 )
 
 del /q /f /s "C:\Windows\SoftwareDistribution\Download\*" 2>nul
-reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\DefaultMediaCost" /v "Ethernet" /t REG_DWORD /d 2 /f  REM Set Ethernet to non-metered
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v "EnableHttp2" /t REG_DWORD /d 1 /f  REM Enable HTTP/2
+net stop winnat
+REG ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\DefaultMediaCost" /v Ethernet /t REG_DWORD /d 2 /f
+REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v EnableHttp2 /t REG_DWORD /d 1 /f
+net start winnat
 ipconfig /flushdns
 ipconfig /release
 ipconfig /renew
