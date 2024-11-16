@@ -38,5 +38,5 @@ The script provides a range of optimization and maintenance options:
 
 ## Requirements
 
-- Windows operating system with Command Prompt (cmd) support.
+- Windows 10/11 operating system with Command Prompt (cmd) support.
 - Administrator privileges are required to run certain commands effectively, such as system repairs and network modifications.
