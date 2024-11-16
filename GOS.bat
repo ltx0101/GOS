@@ -15,16 +15,14 @@ echo 2. Game Mode + Network Optimize         (Choose only if you have connection
 echo 3. Repair Windows                                (Restart is recommended)
 echo 4. Restore Default Settings                      (Restart is recommended)
 echo 5. Install Winget
-echo 6. Create a GOS shortcut
-echo 7. Exit
+echo 6. Exit
 echo ------------------------------------------------------------------------------------
 :choice
 REM Use the CHOICE command to prompt for input
-choice /C 1234567 /N /M "Enter your choice (1-7): "
+choice /C 123456 /N /M "Enter your choice (1-6): "
 
 REM Perform actions based on choice
-if errorlevel 7 goto exit
-if errorlevel 6 goto shortcut
+if errorlevel 6 goto exit
 if errorlevel 5 goto winget
 if errorlevel 4 goto activate
 if errorlevel 3 goto repair
@@ -254,33 +252,6 @@ if /i "%upgradeChoice%"=="Y" (
 
 endlocal
 exit
-
-:shortcut
-
-powershell -Command "exit" || echo PowerShell is not available. Exiting... & exit /b
-
-set shortcutPath=%USERPROFILE%\Desktop\GOS.lnk
-set powershellCommand=powershell.exe -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat' -OutFile 'GOS.bat'; Start-Process -FilePath 'GOS.bat'"
-
-echo Creating GOS shortcut on the desktop...
-
-:: Create a shortcut with WSH
-echo Set WshShell = WScript.CreateObject("WScript.Shell") > "%temp%\CreateShortcut.vbs"
-echo Set Shortcut = WshShell.CreateShortcut("%shortcutPath%") >> "%temp%\CreateShortcut.vbs"
-echo Shortcut.TargetPath = "powershell.exe" >> "%temp%\CreateShortcut.vbs"
-echo Shortcut.Arguments = "-Command ""Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat' -OutFile 'GOS.bat'; Start-Process -FilePath 'GOS.bat'""" >> "%temp%\CreateShortcut.vbs"
-echo Shortcut.WorkingDirectory = "%USERPROFILE%\Desktop" >> "%temp%\CreateShortcut.vbs"
-echo Shortcut.WindowStyle = 1 >> "%temp%\CreateShortcut.vbs"
-echo Shortcut.IconLocation = "powershell.exe,0" >> "%temp%\CreateShortcut.vbs"
-echo Shortcut.Save >> "%temp%\CreateShortcut.vbs"
-
-:: Run the VBS script to create the shortcut
-cscript //nologo "%temp%\CreateShortcut.vbs"
-
-:: Clean up temporary VBS script
-del "%temp%\CreateShortcut.vbs"
-
-echo Shortcut created on your desktop as "GOS.lnk".
 
 :exit
 exit
