@@ -5,9 +5,9 @@ GOS is a comprehensive batch script created for Windows users to streamline thei
 ![GOS](https://github.com/user-attachments/assets/41bce2c9-08f8-420d-95ae-63a1702abfa8)
 
 # Launch command
-
+```ps1
 PowerShell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat' -OutFile 'GOS.bat'; Start-Process -FilePath 'GOS.bat'"
-
+```
 
 ## Features
 
