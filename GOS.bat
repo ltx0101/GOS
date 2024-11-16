@@ -15,14 +15,16 @@ echo 2. Game Mode + Network Optimize         (Choose only if you have connection
 echo 3. Repair Windows                                (Restart is recommended)
 echo 4. Restore Default Settings                      (Restart is recommended)
 echo 5. Install Winget
-echo 6. Exit
+echo 6. Create a GOS shortcut
+echo 7. Exit
 echo ------------------------------------------------------------------------------------
 :choice
 REM Use the CHOICE command to prompt for input
-choice /C 123456 /N /M "Enter your choice (1-6): "
+choice /C 1234567 /N /M "Enter your choice (1-7): "
 
 REM Perform actions based on choice
-if errorlevel 6 goto exit
+if errorlevel 7 goto exit
+if errorlevel 6 goto shortcut
 if errorlevel 5 goto winget
 if errorlevel 4 goto activate
 if errorlevel 3 goto repair
@@ -61,30 +63,23 @@ del /f /s /q "C:\Windows\SoftwareDistribution\Download"
 exit
 
 :full
-winget upgrade --all
-net start "Windows Update"
 
-REM Remove files from temp folder
 del /q /f /s "%temp%\*" 2>nul
-rmdir /q /s "%temp%" 2>nul
-
-REM Remove files from Windows Temp folder
 del /q /f /s "C:\Windows\temp\*" 2>nul
-rmdir /q /s "C:\Windows\temp" 2>nul
-
-REM Remove files from Prefetch folder
 del /q /f /s "C:\Windows\Prefetch\*" 2>nul
-rmdir /q /s "C:\Windows\Prefetch" 2>nul
 
-REM Remove files from ThumbCacheToDelete folder
-del /q /f /s "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete\*" 2>nul
-rmdir /q /s "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete" 2>nul
+if exist "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete\" (
+    del /q /f /s "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete\*" 2>nul
+    rmdir /q /s "%userprofile%\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete" 2>nul
+)
 
+del /q /f /s "C:\Windows\SoftwareDistribution\Download\*" 2>nul
 ipconfig /flushdns
 ipconfig /release
 ipconfig /renew
 color 0a
 net start "Windows Update"
+winget upgrade --all
 
 for %%S in (
   "AllJoyn Router Service" "BITS" "BitLocker Drive Encryption Service" "Bluetooth Support Service" 
@@ -111,18 +106,49 @@ for %%S in (
   "DusmSvc" "TabletInputService" "UsoSvc"
 ) do sc config %%S start= disabled
 
-REM Remove files from SoftwareDistribution Download folder
-del /q /f /s "C:\Windows\SoftwareDistribution\Download\*" 2>nul
-rmdir /q /s "C:\Windows\SoftwareDistribution\Download" 2>nul
 
-cleanmgr.exe /sagerun:1 /d C:
+set "regPath=HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"
+reg add "%regPath%\Recycle Bin" /v StateFlags0001 /t REG_DWORD /d 0 /f
+reg add "%regPath%\Active Setup Temp Folders" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Downloaded Program Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Internet Cache Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Old ChkDsk Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Previous Installations" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Service Pack Cleanup" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Setup Log Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\System error memory dump files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\System error minidump files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Temporary Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Temporary Setup Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Temporary Sync Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Windows Error Reporting" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Windows Upgrade Log Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+cleanmgr /sagerun:1
 
+endlocal
 exit
 
 :repair
 color 0a
 taskkill /f /im explorer.exe
-cleanmgr.exe /sagerun:1 /d C:
+set "regPath=HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"
+reg add "%regPath%\Recycle Bin" /v StateFlags0001 /t REG_DWORD /d 0 /f
+reg add "%regPath%\Active Setup Temp Folders" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Downloaded Program Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Internet Cache Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Old ChkDsk Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Previous Installations" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Service Pack Cleanup" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Setup Log Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\System error memory dump files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\System error minidump files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Temporary Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Temporary Setup Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Temporary Sync Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Windows Error Reporting" /v StateFlags0001 /t REG_DWORD /d 2 /f
+reg add "%regPath%\Windows Upgrade Log Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+cleanmgr /sagerun:1
+
 chkdsk /scan
 DISM /Online /Cleanup-Image /RestoreHealth
 sfc /scannow
@@ -229,6 +255,32 @@ if /i "%upgradeChoice%"=="Y" (
 endlocal
 exit
 
+:shortcut
+
+powershell -Command "exit" || echo PowerShell is not available. Exiting... & exit /b
+
+set shortcutPath=%USERPROFILE%\Desktop\GOS.lnk
+set powershellCommand=powershell.exe -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat' -OutFile 'GOS.bat'; Start-Process -FilePath 'GOS.bat'"
+
+echo Creating GOS shortcut on the desktop...
+
+:: Create a shortcut with WSH
+echo Set WshShell = WScript.CreateObject("WScript.Shell") > "%temp%\CreateShortcut.vbs"
+echo Set Shortcut = WshShell.CreateShortcut("%shortcutPath%") >> "%temp%\CreateShortcut.vbs"
+echo Shortcut.TargetPath = "powershell.exe" >> "%temp%\CreateShortcut.vbs"
+echo Shortcut.Arguments = "-Command ""Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat' -OutFile 'GOS.bat'; Start-Process -FilePath 'GOS.bat'""" >> "%temp%\CreateShortcut.vbs"
+echo Shortcut.WorkingDirectory = "%USERPROFILE%\Desktop" >> "%temp%\CreateShortcut.vbs"
+echo Shortcut.WindowStyle = 1 >> "%temp%\CreateShortcut.vbs"
+echo Shortcut.IconLocation = "powershell.exe,0" >> "%temp%\CreateShortcut.vbs"
+echo Shortcut.Save >> "%temp%\CreateShortcut.vbs"
+
+:: Run the VBS script to create the shortcut
+cscript //nologo "%temp%\CreateShortcut.vbs"
+
+:: Clean up temporary VBS script
+del "%temp%\CreateShortcut.vbs"
+
+echo Shortcut created on your desktop as "GOS.lnk".
 
 :exit
 exit
