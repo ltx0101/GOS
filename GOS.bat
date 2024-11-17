@@ -274,8 +274,17 @@ sc config DoSvc start= auto
 net start DoSvc
 sc config NcaSvc start= demand
 net start NcaSvc
+sfc /scannow
+
 echo Windows Update started!
-pause
+set /p restart="Would you like to restart your PC now? (Y/N): "
+
+if /i "%restart%"=="Y" (
+    echo Restarting the computer...
+    shutdown /r /t 10
+) else (
+    echo You can restart the PC later manually.
+)
 
 :exit
 exit
