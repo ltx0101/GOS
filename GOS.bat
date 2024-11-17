@@ -31,6 +31,7 @@ if errorlevel 1 goto game
 
 :game
 color 0a
+net stop wuauserv
 net start "Windows Update"
 
 for %%S in (
@@ -170,6 +171,7 @@ exit
 
 :activate
 color 0a
+net stop wuauserv
 net start "Windows Update"
 
 for %%S in (
