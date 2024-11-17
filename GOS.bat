@@ -15,14 +15,16 @@ echo 2. Game Mode + Network Optimize         (Choose only if you have connection
 echo 3. Repair Windows                                (Restart is recommended)
 echo 4. Restore Default Settings                      (Restart is recommended)
 echo 5. Install Winget
-echo 6. Exit
+echo 6. Enable Windows Update
+echo 7. Exit
 echo ------------------------------------------------------------------------------------
 :choice
 REM Use the CHOICE command to prompt for input
-choice /C 123456 /N /M "Enter your choice (1-6): "
+choice /C 1234567 /N /M "Enter your choice (1-7): "
 
 REM Perform actions based on choice
-if errorlevel 6 goto exit
+if errorlevel 7 goto exit
+if errorlevel 6 goto winupd
 if errorlevel 5 goto winget
 if errorlevel 4 goto activate
 if errorlevel 3 goto repair
@@ -258,6 +260,22 @@ if /i "%upgradeChoice%"=="Y" (
 
 endlocal
 exit
+
+:winupd
+sc config wuauserv start= auto
+net start wuauserv
+sc config bits start= auto
+net start bits
+sc config CryptSvc start= auto
+net start CryptSvc
+sc config MSIServer start= demand
+net start MSIServer
+sc config DoSvc start= auto
+net start DoSvc
+sc config NcaSvc start= demand
+net start NcaSvc
+echo Windows Update started!
+pause
 
 :exit
 exit
