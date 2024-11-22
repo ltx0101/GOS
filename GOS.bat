@@ -19,7 +19,7 @@ echo 3. Repair Windows                                (Restart is recommended)
 echo 4. Restore Default Settings                      (Restart is recommended)
 echo 5. Network Optimize                                 (Restart Required)
 echo 6. Enable Windows Update
-exho 7. Create GOS Shortcut
+echo 7. Create GOS Shortcut
 echo 8. Exit
 echo ------------------------------------------------------------------------------------
 :choice
