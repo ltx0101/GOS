@@ -5,7 +5,8 @@
 GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed. This script also offers convenient options to install the Windows Package Manager (winget) and perform system cleanup.
 
 
-![Untitled](https://github.com/user-attachments/assets/e0196014-f06b-4aa7-b4d2-25cff99df833)
+![Capture](https://github.com/user-attachments/assets/3f0d95c1-5f3d-4dd8-aaa9-e199c3916850)
+
 
 
 # Launch command
