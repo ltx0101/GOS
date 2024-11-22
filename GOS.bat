@@ -11,10 +11,10 @@ echo.
 echo Please select an option:
 echo ------------------------------------------------------------------------------------
 echo 1. Enable Game Mode
-echo 2. Game Mode + Network Optimize         (Choose only if you have connection issues)
+echo 2. Game Mode + Network Fix             (Choose only if you have connection issues)
 echo 3. Repair Windows                                (Restart is recommended)
 echo 4. Restore Default Settings                      (Restart is recommended)
-echo 5. Install Winget
+echo 5. Network Optimize                                 (Restart Required)
 echo 6. Enable Windows Update
 echo 7. Exit
 echo ------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ choice /C 1234567 /N /M "Enter your choice (1-7): "
 REM Perform actions based on choice
 if errorlevel 7 goto exit
 if errorlevel 6 goto winupd
-if errorlevel 5 goto winget
+if errorlevel 5 goto nettweaks
 if errorlevel 4 goto activate
 if errorlevel 3 goto repair
 if errorlevel 2 goto full
@@ -34,7 +34,7 @@ if errorlevel 1 goto game
 :game
 color 0a
 net stop wuauserv
-net start "Windows Update"
+net stop "Windows Update"
 
 for %%S in (
   "AllJoyn Router Service" "BITS" "BitLocker Drive Encryption Service" "Bluetooth Support Service" 
@@ -83,8 +83,6 @@ ipconfig /flushdns
 ipconfig /release
 ipconfig /renew
 color 0a
-net start "Windows Update"
-winget upgrade --all
 
 for %%S in (
   "AllJoyn Router Service" "BITS" "BitLocker Drive Encryption Service" "Bluetooth Support Service" 
@@ -212,53 +210,95 @@ if /i "%restart%"=="Y" (
 
 exit
 
-:winget
+:nettweaks
 
-setlocal
+REG ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\DefaultMediaCost" /v Ethernet /t REG_DWORD /d 2 /f
+REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v EnableHttp2 /t REG_DWORD /d 1 /f
+net start winnat
 
-echo Checking if winget is installed...
-winget --version >nul 2>&1
+echo Applying Network Adapter Registry Settings...
+for /f %%r in ('reg query "HKLM\SYSTEM\ControlSet001\Control\Class\{4D36E972-E325-11CE-BFC1-08002bE10318}" /f "PCI\VEN" /d /s^|Findstr HKEY') do (
+    REG ADD "%%r" /v "*EEE" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*FlowControl" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*InterruptModeration" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*JumboPacket" /t REG_SZ /d "1415" /f >NUL
+    REG ADD "%%r" /v "*LsoV1IPv4" /t REG_SZ /d "1" /f >NUL
+    REG ADD "%%r" /v "*LsoV2IPv4" /t REG_SZ /d "1" /f >NUL
+    REG ADD "%%r" /v "*LsoV2IPv6" /t REG_SZ /d "1" /f >NUL
+    REG ADD "%%r" /v "*WakeOnMagicPacket" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*WakeOnPattern" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*SpeedDuplex" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*TransmitBuffers" /t REG_SZ /d "80" /f >NUL
+    REG ADD "%%r" /b "*GreenEthernet" /t REG_SZ /d "0" /f >NUL
+)
 
-if %ERRORLEVEL%==0 (
-    echo Winget is already installed.
+echo Applying TCP/IP Interface Registry Settings...
+for /f %%i in ('wmic path win32_networkadapter get GUID ^| findstr "{"') do (
+    REG ADD "HKLM\System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TcpAckFrequency /t REG_DWORD /d 1 /f >NUL
+    REG ADD "HKLM\System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TcpDelAckTicks /t REG_DWORD /d 0 /f >NUL
+    REG ADD "HKLM\System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TCPNoDelay /t REG_DWORD /d 1 /f >NUL
+)
+
+echo Configuring Global TCP/IP Settings...
+netsh int udp set global uro=disable >NUL
+netsh int ip set global mediasenseeventlog=disabled >NUL
+netsh int ip set global neighborcachelimit=4096 >NUL
+netsh int tcp set global chimney=disabled >NUL
+netsh int tcp set global dca=enabled >NUL
+netsh int tcp set heuristics disabled >NUL
+netsh int tcp set global initialRto=3000 >NUL
+netsh int tcp set global maxsynretransmissions=2 >NUL
+REG ADD "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DelayedAckFrequency" /t REG_DWORD /d "1" /f
+REG ADD "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DelayedAckTicks" /t REG_DWORD /d "1" /f
+
+echo Disabling Unnecessary Network Features...
+powershell -Command "Disable-NetAdapterBinding -Name '*' -ComponentID ms_lldp -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterBinding -Name '*' -ComponentID ms_lltdio -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterBinding -Name '*' -ComponentID ms_msclient -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterChecksumOffload -Name '*' -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterRsc -Name '*' -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterPowerManagement -Name '*' -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterQos -Name '*' -ErrorAction SilentlyContinue"
+
+echo Disabling Network Adapter Offload Settings...
+for /f %%r in ('reg query "HKLM\SYSTEM\ControlSet001\Control\Class\{4D36E972-E325-11CE-BFC1-08002bE10318}" /f "PCI\VEN" /d /s^|Findstr HKEY') do (
+    REG ADD "%%r" /v "*ChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*ChecksumOffloadIPv6" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*TCPChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*TCPChecksumOffloadIPv6" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*UDPChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*UDPChecksumOffloadIPv6" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*LsoV1IPv4" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*LsoV2IPv4" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*LsoV2IPv6" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*TaskOffload" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*LargeSendOffloadV1" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*LargeSendOffloadV2" /t REG_SZ /d "0" /f >NUL
+)
+
+echo Disabling Advanced Network Features...
+powershell -Command "Disable-NetAdapterChecksumOffload -Name '*' -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterRsc -Name '*' -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterLso -Name '*' -ErrorAction SilentlyContinue"
+powershell -Command "Disable-NetAdapterPowerManagement -Name '*' -ErrorAction SilentlyContinue"
+
+net start winnat
+ipconfig /flushdns
+ipconfig /release
+ipconfig /renew
+net stop winnat
+net start winnat
+
+set /p restart="Would you like to restart your PC now? (Y/N): "
+
+if /i "%restart%"=="Y" (
+    echo Restarting the computer...
+    shutdown /r /t 10
 ) else (
-    echo Winget is not installed. Proceeding with installation...
-    set "URL=https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-    set "FILE=%TEMP%\AppInstaller.msixbundle"
-
-    echo Downloading the latest App Installer package for winget...
-    powershell -Command "Invoke-WebRequest -Uri %URL% -OutFile %FILE%"
-
-    if exist "%FILE%" (
-        echo Download complete. Installing App Installer...
-        powershell -Command "Add-AppxPackage -Path '%FILE%'"
-        
-        if %ERRORLEVEL%==0 (
-            echo Winget installed successfully.
-            echo Cleaning up downloaded files...
-            del "%FILE%"
-            echo Done.
-        ) else (
-            echo Error occurred during installation.
-        )
-    ) else (
-        echo Download failed. Please check your internet connection and try again.
-    )
+    echo You can restart the PC later manually.
 )
 
 
-echo Do you want to upgrade all your apps? (Y/N)
-set /p upgradeChoice=
-
-if /i "%upgradeChoice%"=="Y" (
-    echo Upgrading all apps...
-    winget upgrade --all
-    echo All apps upgraded.
-) else (
-    echo No apps were upgraded.
-)
-
-endlocal
 exit
 
 :winupd
