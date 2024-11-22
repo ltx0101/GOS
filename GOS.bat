@@ -7,7 +7,7 @@ chcp 65001 >nul
 echo ┏┓┏┓┏┓
 echo ┃┓┃┃┗┓
 echo ┗┛┗┛┗┛
-echo 🗲 Gaming Optimization Script 🗲
+echo Gaming Optimization Script
 echo.
 echo Hello, %USERNAME%.
 echo.
@@ -19,14 +19,16 @@ echo 3. Repair Windows                                (Restart is recommended)
 echo 4. Restore Default Settings                      (Restart is recommended)
 echo 5. Network Optimize                                 (Restart Required)
 echo 6. Enable Windows Update
-echo 7. Exit
+exho 7. Create GOS Shortcut
+echo 8. Exit
 echo ------------------------------------------------------------------------------------
 :choice
 REM Use the CHOICE command to prompt for input
-choice /C 1234567 /N /M "Enter your choice (1-7): "
+choice /C 12345678 /N /M "Enter your choice (1-8): "
 
 REM Perform actions based on choice
-if errorlevel 7 goto exit
+if errorlevel 8 goto exit
+if errorlevel 7 goto shortcut
 if errorlevel 6 goto winupd
 if errorlevel 5 goto nettweaks
 if errorlevel 4 goto activate
@@ -328,6 +330,27 @@ if /i "%restart%"=="Y" (
 ) else (
     echo You can restart the PC later manually.
 )
+
+:shortcut
+REM Variables
+set SHORTCUT_NAME=GOS
+set TARGET_CMD=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList 'iwr \"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\" -OutFile \"GOS.bat\"; .\GOS.bat'"
+set SHORTCUT_PATH=%USERPROFILE%\Desktop\%SHORTCUT_NAME%.lnk
+
+REM Create Shortcut using PowerShell
+powershell.exe -NoProfile -Command ^
+$WshShell = New-Object -ComObject WScript.Shell; ^
+$Shortcut = $WshShell.CreateShortcut('%SHORTCUT_PATH%'); ^
+$Shortcut.TargetPath = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'; ^
+$Shortcut.Arguments = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList ''iwr \\"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\\" -OutFile \\"GOS.bat\\"; .\GOS.bat''"'; ^
+$Shortcut.WorkingDirectory = '%USERPROFILE%'; ^
+$Shortcut.WindowStyle = 1; ^
+$Shortcut.Description = 'Shortcut to execute GOS script'; ^
+$Shortcut.IconLocation = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,0'; ^
+$Shortcut.Save()
+
+echo Shortcut "%SHORTCUT_NAME%" created on Desktop.
+pause
 
 :exit
 exit
