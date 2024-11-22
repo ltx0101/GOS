@@ -349,7 +349,7 @@ $Shortcut.Description = 'Shortcut to execute GOS script'; ^
 $Shortcut.IconLocation = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,0'; ^
 $Shortcut.Save()
 
-echo Shortcut "%SHORTCUT_NAME%" created on Desktop.
+echo Shortcut GOS created on Desktop.
 pause
 
 :exit
