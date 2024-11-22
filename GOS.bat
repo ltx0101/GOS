@@ -3,7 +3,10 @@ title GOS
 
 if not "%1"=="am_admin" (powershell start -verb runas '%0' am_admin & exit /b)
 cd "%~dp0"
-
+chcp 65001 >nul
+echo ┏┓┏┓┏┓
+echo ┃┓┃┃┗┓
+echo ┗┛┗┛┗┛
 echo Gaming Optimization Script
 echo.
 echo Hello, %USERNAME%.
