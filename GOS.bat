@@ -56,7 +56,7 @@ for %%S in (
   "Windows Error Reporting Service" "Windows Image Acquisition (WIA)" "Windows Insider Service" 
   "Windows Media Player Network Sharing Service" "Windows Search" "Windows Update" "WpcMonSvc" 
   "wscsvc" "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
-  "Xbox Live Game Save" "Xbox Live Networking Service"
+  "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "WerSvc" "SENS" 
 ) do net stop %%S
 
 for %%S in (
@@ -104,6 +104,7 @@ for %%S in (
   "Windows Error Reporting Service" "Windows Image Acquisition (WIA)" "Windows Insider Service" 
   "Windows Media Player Network Sharing Service" "Windows Search" "Windows Update" "WpcMonSvc" 
   "wscsvc" "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
+  "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "WerSvc" "SENS" 
   "Xbox Live Game Save" "Xbox Live Networking Service"
 ) do net stop %%S
 
