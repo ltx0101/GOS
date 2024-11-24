@@ -72,6 +72,7 @@ exit
 
 :full
 
+rd /s /q  %LOCALAPPDATA%\D3DSCache
 del /q /f /s "%temp%\*" 2>nul
 del /q /f /s "C:\Windows\temp\*" 2>nul
 del /q /f /s "C:\Windows\Prefetch\*" 2>nul
