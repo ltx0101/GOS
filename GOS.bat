@@ -232,7 +232,7 @@ for /f %%r in ('reg query "HKLM\SYSTEM\ControlSet001\Control\Class\{4D36E972-E32
     REG ADD "%%r" /v "*LsoV2IPv6" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*WakeOnMagicPacket" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*WakeOnPattern" /t REG_SZ /d "0" /f >NUL
-    REG ADD "%%r" /b "*GreenEthernet" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*GreenEthernet" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*ChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*ChecksumOffloadIPv6" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*TCPChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
@@ -248,6 +248,8 @@ for /f %%r in ('reg query "HKLM\SYSTEM\ControlSet001\Control\Class\{4D36E972-E32
     REG ADD "%%r" /v "*ARPOffload" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*NSOffload" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*PowerSavingMode" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*IPChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
+
 
 )
 
