@@ -222,56 +222,17 @@ exit
 
 :nettweaks
 
-REG ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\DefaultMediaCost" /v Ethernet /t REG_DWORD /d 2 /f
-REG ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v EnableHttp2 /t REG_DWORD /d 1 /f
 net start winnat
 
 echo Applying Network Adapter Registry Settings...
 for /f %%r in ('reg query "HKLM\SYSTEM\ControlSet001\Control\Class\{4D36E972-E325-11CE-BFC1-08002bE10318}" /f "PCI\VEN" /d /s^|Findstr HKEY') do (
     REG ADD "%%r" /v "*EEE" /t REG_SZ /d "0" /f >NUL
-    REG ADD "%%r" /v "*FlowControl" /t REG_SZ /d "0" /f >NUL
-    REG ADD "%%r" /v "*InterruptModeration" /t REG_SZ /d "0" /f >NUL
-    REG ADD "%%r" /v "*JumboPacket" /t REG_SZ /d "1415" /f >NUL
-    REG ADD "%%r" /v "*LsoV1IPv4" /t REG_SZ /d "1" /f >NUL
-    REG ADD "%%r" /v "*LsoV2IPv4" /t REG_SZ /d "1" /f >NUL
-    REG ADD "%%r" /v "*LsoV2IPv6" /t REG_SZ /d "1" /f >NUL
+    REG ADD "%%r" /v "*LsoV1IPv4" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*LsoV2IPv4" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*LsoV2IPv6" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*WakeOnMagicPacket" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*WakeOnPattern" /t REG_SZ /d "0" /f >NUL
-    REG ADD "%%r" /v "*SpeedDuplex" /t REG_SZ /d "0" /f >NUL
-    REG ADD "%%r" /v "*TransmitBuffers" /t REG_SZ /d "80" /f >NUL
     REG ADD "%%r" /b "*GreenEthernet" /t REG_SZ /d "0" /f >NUL
-)
-
-echo Applying TCP/IP Interface Registry Settings...
-for /f %%i in ('wmic path win32_networkadapter get GUID ^| findstr "{"') do (
-    REG ADD "HKLM\System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TcpAckFrequency /t REG_DWORD /d 1 /f >NUL
-    REG ADD "HKLM\System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TcpDelAckTicks /t REG_DWORD /d 0 /f >NUL
-    REG ADD "HKLM\System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TCPNoDelay /t REG_DWORD /d 1 /f >NUL
-)
-
-echo Configuring Global TCP/IP Settings...
-netsh int udp set global uro=disable >NUL
-netsh int ip set global mediasenseeventlog=disabled >NUL
-netsh int ip set global neighborcachelimit=4096 >NUL
-netsh int tcp set global chimney=disabled >NUL
-netsh int tcp set global dca=enabled >NUL
-netsh int tcp set heuristics disabled >NUL
-netsh int tcp set global initialRto=3000 >NUL
-netsh int tcp set global maxsynretransmissions=2 >NUL
-REG ADD "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DelayedAckFrequency" /t REG_DWORD /d "1" /f
-REG ADD "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "DelayedAckTicks" /t REG_DWORD /d "1" /f
-
-echo Disabling Unnecessary Network Features...
-powershell -Command "Disable-NetAdapterBinding -Name '*' -ComponentID ms_lldp -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterBinding -Name '*' -ComponentID ms_lltdio -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterBinding -Name '*' -ComponentID ms_msclient -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterChecksumOffload -Name '*' -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterRsc -Name '*' -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterPowerManagement -Name '*' -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterQos -Name '*' -ErrorAction SilentlyContinue"
-
-echo Disabling Network Adapter Offload Settings...
-for /f %%r in ('reg query "HKLM\SYSTEM\ControlSet001\Control\Class\{4D36E972-E325-11CE-BFC1-08002bE10318}" /f "PCI\VEN" /d /s^|Findstr HKEY') do (
     REG ADD "%%r" /v "*ChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*ChecksumOffloadIPv6" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*TCPChecksumOffloadIPv4" /t REG_SZ /d "0" /f >NUL
@@ -284,13 +245,11 @@ for /f %%r in ('reg query "HKLM\SYSTEM\ControlSet001\Control\Class\{4D36E972-E32
     REG ADD "%%r" /v "*TaskOffload" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*LargeSendOffloadV1" /t REG_SZ /d "0" /f >NUL
     REG ADD "%%r" /v "*LargeSendOffloadV2" /t REG_SZ /d "0" /f >NUL
-)
+    REG ADD "%%r" /v "*ARPOffload" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*NSOffload" /t REG_SZ /d "0" /f >NUL
+    REG ADD "%%r" /v "*PowerSavingMode" /t REG_SZ /d "0" /f >NUL
 
-echo Disabling Advanced Network Features...
-powershell -Command "Disable-NetAdapterChecksumOffload -Name '*' -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterRsc -Name '*' -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterLso -Name '*' -ErrorAction SilentlyContinue"
-powershell -Command "Disable-NetAdapterPowerManagement -Name '*' -ErrorAction SilentlyContinue"
+)
 
 net start winnat
 ipconfig /flushdns
@@ -307,7 +266,6 @@ if /i "%restart%"=="Y" (
 ) else (
     echo You can restart the PC later manually.
 )
-
 
 exit
 
