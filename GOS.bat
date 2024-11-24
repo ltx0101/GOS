@@ -339,19 +339,21 @@ if /i "%restart%"=="Y" (
 :shortcut
 REM Variables
 set SHORTCUT_NAME=GOS
-set TARGET_CMD=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList 'iwr \"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\" -OutFile \"GOS.bat\"; .\GOS.bat'"
+set TARGET_CMD=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+set ARGUMENTS=-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -Verb RunAs -ArgumentList 'iwr \"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\" -OutFile \"GOS.bat\"; .\GOS.bat'"
+
 set SHORTCUT_PATH=%USERPROFILE%\Desktop\%SHORTCUT_NAME%.lnk
 
 REM Create Shortcut using PowerShell
 powershell.exe -NoProfile -Command ^
 $WshShell = New-Object -ComObject WScript.Shell; ^
 $Shortcut = $WshShell.CreateShortcut('%SHORTCUT_PATH%'); ^
-$Shortcut.TargetPath = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'; ^
-$Shortcut.Arguments = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList ''iwr \\"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\\" -OutFile \\"GOS.bat\\"; .\GOS.bat''"'; ^
+$Shortcut.TargetPath = '%TARGET_CMD%'; ^
+$Shortcut.Arguments = '%ARGUMENTS%'; ^
 $Shortcut.WorkingDirectory = '%USERPROFILE%'; ^
 $Shortcut.WindowStyle = 1; ^
 $Shortcut.Description = 'Shortcut to execute GOS script'; ^
-$Shortcut.IconLocation = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe,0'; ^
+$Shortcut.IconLocation = '%TARGET_CMD%,0'; ^
 $Shortcut.Save()
 
 echo Shortcut GOS created on Desktop.
