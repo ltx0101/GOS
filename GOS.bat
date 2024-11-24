@@ -55,8 +55,10 @@ for %%S in (
   "wercplsupport" "WerSvc" "WbioSrvc" "Windows Biometric Service" "Windows Camera Frame Server" 
   "Windows Error Reporting Service" "Windows Image Acquisition (WIA)" "Windows Insider Service" 
   "Windows Media Player Network Sharing Service" "Windows Search" "Windows Update" "WpcMonSvc" 
-  "wscsvc" "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
-  "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "WerSvc" "SENS" 
+  "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
+  "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "SENS" 
+  "xboxgip" "xbgm" "XblGameSave" "XblAuthManager" "seclogon" "WSearch" "Tablet PC Input Service"
+  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService"
 ) do net stop %%S
 
 for %%S in (
@@ -90,6 +92,7 @@ ipconfig /renew
 color 0a
 
 for %%S in (
+  for %%S in (
   "AllJoyn Router Service" "BITS" "BitLocker Drive Encryption Service" "Bluetooth Support Service" 
   "BthAvctpSvc" "CertPropSvc" "Connected Devices Platform Service" "CscService" "DiagTrack" 
   "Diagnostic Policy Service" "Distributed Link Tracking Client" "Downloaded Maps Manager" "DPS" 
@@ -103,9 +106,10 @@ for %%S in (
   "wercplsupport" "WerSvc" "WbioSrvc" "Windows Biometric Service" "Windows Camera Frame Server" 
   "Windows Error Reporting Service" "Windows Image Acquisition (WIA)" "Windows Insider Service" 
   "Windows Media Player Network Sharing Service" "Windows Search" "Windows Update" "WpcMonSvc" 
-  "wscsvc" "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
-  "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "WerSvc" "SENS" 
-  "Xbox Live Game Save" "Xbox Live Networking Service"
+  "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
+  "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "SENS" 
+  "xboxgip" "xbgm" "XblGameSave" "XblAuthManager" "seclogon" "WSearch" "Tablet PC Input Service"
+  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService"
 ) do net stop %%S
 
 for %%S in (
