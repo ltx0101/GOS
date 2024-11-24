@@ -340,7 +340,7 @@ if /i "%restart%"=="Y" (
 REM Variables
 set SHORTCUT_NAME=GOS
 set TARGET_CMD=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
-set ARGUMENTS=-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -Verb RunAs -ArgumentList 'iwr \"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\" -OutFile \"GOS.bat\"; .\GOS.bat'"
+set ARGUMENTS=-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -Verb RunAs -ArgumentList ''iwr \"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\" -OutFile \"GOS.bat\"; .\GOS.bat''"
 
 set SHORTCUT_PATH=%USERPROFILE%\Desktop\%SHORTCUT_NAME%.lnk
 
