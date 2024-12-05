@@ -45,7 +45,7 @@ for %%S in (
   "AllJoyn Router Service" "BITS" "BitLocker Drive Encryption Service" "Bluetooth Support Service" 
   "BthAvctpSvc" "CertPropSvc" "Connected Devices Platform Service" "CscService" "DiagTrack" 
   "Diagnostic Policy Service" "Distributed Link Tracking Client" "Downloaded Maps Manager" "DPS" 
-  "DusmSvc" "Fax" "Function Discovery Provider Host" "Function Discovery Resource Publication" 
+  "DusmSvc" "Fax" "Function Discovery Resource Publication" 
   "Geolocation Service" "icssvc" "LanmanServer" "lmhosts" "MapsBroker" "Microsoft iSCSI Initiator Service" 
   "Netlogon" "Offline Files" "Parental Controls" "Payments and NFC/SE Manager" "Phone Service" 
   "PhoneSvc" "Print Spooler" "Program Compatibility Assistant Service" "RemoteRegistry" "Retail Demo Service" 
@@ -60,6 +60,7 @@ for %%S in (
   "xboxgip" "xbgm" "XblGameSave" "XblAuthManager" "seclogon" "WSearch" "Tablet PC Input Service"
   "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService"
 ) do net stop %%S
+net stop "Function Discovery Provider Host" /y
 
 for %%S in (
   "BITS" "SysMain" "SSDPSRV" "WSearch" "WbioSrvc" "Spooler" "RemoteRegistry" 
