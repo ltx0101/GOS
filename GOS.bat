@@ -58,7 +58,7 @@ for %%S in (
   "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
   "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "SENS" 
   "xboxgip" "xbgm" "XblGameSave" "XblAuthManager" "seclogon" "WSearch" "Tablet PC Input Service"
-  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService" "WinDefend" "WdNicSvc"
+  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService" "InstallService" "UsoSvc"
 ) do net stop %%S
 net stop "Function Discovery Provider Host" /y
 
@@ -66,7 +66,7 @@ for %%S in (
   "BITS" "SysMain" "SSDPSRV" "WSearch" "WbioSrvc" "Spooler" "RemoteRegistry" 
   "wercplsupport" "DPS" "TermService" "WpcMonSvc" "DiagTrack" "MapsBroker" "wisvc" 
   "icssvc" "CertPropSvc" "PhoneSvc" "BthAvctpSvc" "lmhosts" "WerSvc" "RmSvc" 
-  "DusmSvc" "TabletInputService" "UsoSvc"
+  "DusmSvc" "TabletInputService" 
 ) do sc config %%S start= disabled
 exit
 
@@ -110,7 +110,7 @@ for %%S in (
   "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
   "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "SENS" 
   "xboxgip" "xbgm" "XblGameSave" "XblAuthManager" "seclogon" "WSearch" "Tablet PC Input Service"
-  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService"
+  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService" "InstallService" "UsoSvc"
 ) do net stop %%S
 net stop "Function Discovery Provider Host" /y
 
@@ -118,7 +118,7 @@ for %%S in (
   "BITS" "SysMain" "SSDPSRV" "WSearch" "WbioSrvc" "Spooler" "RemoteRegistry" 
   "wercplsupport" "DPS" "TermService" "WpcMonSvc" "DiagTrack" "MapsBroker" "wisvc" 
   "icssvc" "CertPropSvc" "PhoneSvc" "BthAvctpSvc" "lmhosts" "WerSvc" "RmSvc" 
-  "DusmSvc" "TabletInputService" "UsoSvc"
+  "DusmSvc" "TabletInputService" 
 ) do sc config %%S start= disabled
 
 
@@ -208,7 +208,7 @@ for %%S in (
   "BITS" "SysMain" "SSDPSRV" "WSearch" "WbioSrvc" "Spooler" "RemoteRegistry" 
   "wercplsupport" "DPS" "TermService" "WpcMonSvc" "DiagTrack" "MapsBroker" "wisvc" 
   "icssvc" "CertPropSvc" "PhoneSvc" "BthAvctpSvc" "lmhosts" "WerSvc" "RmSvc" 
-  "DusmSvc" "TabletInputService" "UsoSvc"
+  "DusmSvc" "TabletInputService" "UsoSvc" "InstallService"
 ) do sc config %%S start= demand
 
 set /p restart="Would you like to restart your PC now? (Y/N): "
