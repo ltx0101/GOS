@@ -58,7 +58,7 @@ for %%S in (
   "wuauserv" "Xbox Accessory Management Service" "Xbox Live Auth Manager" 
   "Xbox Live Game Save" "Xbox Live Networking Service" "Themes" "TrkWks" "FontCache" "DoSvc" "SENS" 
   "xboxgip" "xbgm" "XblGameSave" "XblAuthManager" "seclogon" "WSearch" "Tablet PC Input Service"
-  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService"
+  "XboxGipSvc" "WaaSMedicSvc" "TextInputManagementService" "WebBrowserInfrastructureService" "WpnService" "WinDefend" "WdNicSvc"
 ) do net stop %%S
 net stop "Function Discovery Provider Host" /y
 
