@@ -286,6 +286,8 @@ sc config DoSvc start= auto
 net start DoSvc
 sc config NcaSvc start= demand
 net start NcaSvc
+sc config UsoSvc start= auto
+net start UsoSvc
 sfc /scannow
 
 echo Windows Update started!
