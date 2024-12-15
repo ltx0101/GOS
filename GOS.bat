@@ -293,6 +293,7 @@ if /i "%restart%"=="Y" (
 ) else (
     echo You can restart the PC later manually.
 )
+exit
 
 :shortcut
 cls
@@ -317,6 +318,7 @@ $Shortcut.Save()
 
 echo Shortcut GOS created on Desktop.
 pause
+exit
 
 :winget
 cls
@@ -356,6 +358,7 @@ if /i "%user_input%"=="Y" (
 )
 
 pause
+exit
 
 :exit
 exit
