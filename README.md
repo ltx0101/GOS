@@ -5,7 +5,8 @@
 GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed. This script also offers convenient options to install the Windows Package Manager (winget) and perform system cleanup.
 
 
-![Capture](https://github.com/user-attachments/assets/3f0d95c1-5f3d-4dd8-aaa9-e199c3916850)
+![Capture](https://github.com/user-attachments/assets/859b8848-cd6a-4b99-a1d9-b7318cf6d385)
+
 
 
 
@@ -44,9 +45,11 @@ The script provides a range of optimization and maintenance options:
 7. **Create GOS Shortcut**  
    Creates a Desktop GOS Shortcut.
  
-8. **Exit**  
+8. **Winget Installer**
+   Installs Winget, then prompts the user to update all apps using Winget in a separate PowerShell window.
+
+9. **Exit**  
    Exits the script without making any changes.
- 
 ## Requirements
 
 - Windows 10/11 operating system with Command Prompt (cmd) support.
