@@ -167,18 +167,7 @@ cleanmgr /sagerun:1
 chkdsk /scan
 DISM /Online /Cleanup-Image /RestoreHealth
 sfc /scannow
-start explorer.exe
-echo.
-echo Repair completed.
-set /p restart="Would you like to restart your PC now? (Y/N): "
-
-if /i "%restart%"=="Y" (
-    echo Restarting the computer...
-    shutdown /r /t 10
-) else (
-    echo You can restart the PC later manually.
-)
-
+shutdown /r /t 5
 exit
 
 :activate
