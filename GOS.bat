@@ -20,14 +20,16 @@ echo 4. Restore Default Settings                      (Restart is recommended)
 echo 5. Network Optimize                                 (Restart Required)
 echo 6. Enable Windows Update
 echo 7. Create GOS Shortcut
-echo 8. Exit
+echo 8. Winget Installer                               (Experimental Feature)
+echo 9. Exit
 echo ------------------------------------------------------------------------------------
 :choice
 REM Use the CHOICE command to prompt for input
-choice /C 12345678 /N /M "Enter your choice (1-8): "
+choice /C 123456789 /N /M "Enter your choice (1-9): "
 
 REM Perform actions based on choice
-if errorlevel 8 goto exit
+if errorlevel 9 goto exit
+if errorlevel 8 goto winget
 if errorlevel 7 goto shortcut
 if errorlevel 6 goto winupd
 if errorlevel 5 goto nettweaks
@@ -37,6 +39,7 @@ if errorlevel 2 goto full
 if errorlevel 1 goto game
 
 :game
+cls
 color 0a
 net stop wuauserv
 net stop "Windows Update"
@@ -71,7 +74,7 @@ for %%S in (
 exit
 
 :full
-
+cls
 rd /s /q  %LOCALAPPDATA%\D3DSCache
 del /q /f /s "%temp%\*" 2>nul
 del /q /f /s "C:\Windows\temp\*" 2>nul
@@ -144,6 +147,7 @@ endlocal
 exit
 
 :repair
+cls
 color 0a
 taskkill /f /im explorer.exe
 set "regPath=HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"
@@ -212,7 +216,7 @@ if /i "%restart%"=="Y" (
 exit
 
 :nettweaks
-
+cls
 net start winnat
 
 echo Applying Network Adapter Registry Settings...
@@ -263,6 +267,7 @@ if /i "%restart%"=="Y" (
 exit
 
 :winupd
+cls
 sc config wuauserv start= auto
 net start wuauserv
 sc config bits start= auto
@@ -290,6 +295,7 @@ if /i "%restart%"=="Y" (
 )
 
 :shortcut
+cls
 REM Variables
 set SHORTCUT_NAME=GOS
 set TARGET_CMD=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
@@ -310,6 +316,45 @@ $Shortcut.IconLocation = '%TARGET_CMD%,0'; ^
 $Shortcut.Save()
 
 echo Shortcut GOS created on Desktop.
+pause
+
+:winget
+cls
+echo Downloading Winget
+echo Please wait..
+set download_url=https://aka.ms/getwinget
+set temp_file=%temp%\AppInstaller.appxbundle
+powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%download_url%', '%temp_file%')"
+
+if not exist "%temp_file%" (
+    echo Failed to download App Installer.
+    pause
+    exit /b
+)
+
+cls
+echo Installing...
+powershell -Command "Add-AppxPackage -Path '%temp_file%'"
+
+if %errorlevel% NEQ 0 (
+    echo Installation of App Installer failed.
+    pause
+    exit /b
+)
+
+cls
+echo Winget has been successfully installed.
+
+set /p user_input="Would you like to upgrade your apps now? (Y/N): "
+
+if /i "%user_input%"=="Y" (
+    echo Opening a new PowerShell window to update all apps...
+    start powershell -NoExit -Command "winget upgrade --all;"
+    exit
+) else (
+    echo You can always upgrade later!
+)
+
 pause
 
 :exit
