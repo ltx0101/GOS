@@ -45,9 +45,9 @@ The script provides a range of optimization and maintenance options:
 7. **Create GOS Shortcut**  
    Creates a Desktop GOS Shortcut.
  
-8. **Winget Installer**
+8. **Winget Installer**  
    Installs Winget, then prompts the user to update all apps using Winget in a separate PowerShell window.
-
+   
 9. **Exit**  
    Exits the script without making any changes.
 ## Requirements
