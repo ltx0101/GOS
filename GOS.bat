@@ -19,8 +19,8 @@ echo 3. Repair Windows                                (Restart is recommended)
 echo 4. Restore Default Settings                      (Restart is recommended)
 echo 5. Network Optimize                                 (Restart Required)
 echo 6. Enable Windows Update
-echo 7. Create GOS Shortcut
-echo 8. Winget Installer                               (Experimental Feature)
+echo 7. Create Shortcut                                     (Powershell)
+echo 8. Winget Installer
 echo 9. Exit
 echo ------------------------------------------------------------------------------------
 :choice
