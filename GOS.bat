@@ -15,9 +15,9 @@ echo Please select an option:
 echo ------------------------------------------------------------------------------------
 echo 1. Enable Game Mode
 echo 2. Game Mode + Network Fix             (Choose only if you have connection issues)
-echo 3. Repair Windows                                (Restart is recommended)
+echo 3. Repair Windows                                (Restart is REQUIRED)
 echo 4. Restore Default Settings                      (Restart is recommended)
-echo 5. Network Optimize                                 (Restart Required)
+echo 5. Network Optimize                                 (Restart REQUIRED)
 echo 6. Enable Windows Update
 echo 7. Create Shortcut                                     (Powershell)
 echo 8. Winget Installer
