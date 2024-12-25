@@ -75,6 +75,8 @@ exit
 
 :full
 cls
+del /q "%temp%\NVIDIA Corporation\NV_Cache\*"
+for /d %%x in ("%temp%\NVIDIA Corporation\NV_Cache\*") do @rd /s /q "%%x"
 rd /s /q  %LOCALAPPDATA%\D3DSCache
 del /q /f /s "%temp%\*" 2>nul
 del /q /f /s "C:\Windows\temp\*" 2>nul
