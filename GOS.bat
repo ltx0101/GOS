@@ -168,6 +168,7 @@ reg add "%regPath%\Temporary Setup Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
 reg add "%regPath%\Temporary Sync Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
 reg add "%regPath%\Windows Error Reporting" /v StateFlags0001 /t REG_DWORD /d 2 /f
 reg add "%regPath%\Windows Upgrade Log Files" /v StateFlags0001 /t REG_DWORD /d 2 /f
+start explorer.exe
 cleanmgr /sagerun:1
 
 chkdsk /scan
