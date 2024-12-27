@@ -1,12 +1,14 @@
 # GOS
 ## Gaming Optimization Script
-![Capture](https://github.com/user-attachments/assets/2ad9d975-9e26-477f-a789-2e61159d7543)
+![2](https://github.com/user-attachments/assets/7c9a08cb-5b20-46ae-81af-c404b2ea79c8)
+
 
 
 
 GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed. This script also offers convenient options to install the Windows Package Manager (winget) and perform system cleanup.
 
-![Capture](https://github.com/user-attachments/assets/febe3202-9057-4687-95ab-a4c370e7a8ad)
+![Capture](https://github.com/user-attachments/assets/81613314-6525-4d0b-b06a-cb5fa56b4a8f)
+
 
 
 
