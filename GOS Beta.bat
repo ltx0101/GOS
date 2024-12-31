@@ -7,7 +7,7 @@ chcp 65001 >nul
 echo ┏┓┏┓┏┓
 echo ┃┓┃┃┗┓
 echo ┗┛┗┛┗┛
-echo Gaming Optimization Script
+echo Gaming Optimization Script (BETA)
 echo.
 echo Hello, %USERNAME%.
 echo.
