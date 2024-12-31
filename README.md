@@ -30,7 +30,7 @@ PowerShell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/l
 
 ### PowerShell
 ```ps1
-iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS Beta.bat" -OutFile "GOS Beta.bat"; .\GOS Beta.bat
+iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOSbeta.bat" -OutFile "GOSbeta.bat"; .\GOSbeta.bat
 ```
 
 
