@@ -315,9 +315,9 @@ exit
 :shortcut
 cls
 REM Variables
-set SHORTCUT_NAME=GOS
+set SHORTCUT_NAME=GOSbeta
 set TARGET_CMD=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
-set ARGUMENTS=-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -Verb RunAs -ArgumentList ''iwr \"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat\" -OutFile \"GOS.bat\"; .\GOS.bat''"
+set ARGUMENTS=-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -Verb RunAs -ArgumentList ''iwr \"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOSbeta.bat\" -OutFile \"GOSbeta.bat\"; .\GOSbeta.bat''"
 
 set SHORTCUT_PATH=%USERPROFILE%\Desktop\%SHORTCUT_NAME%.lnk
 
@@ -333,7 +333,7 @@ $Shortcut.Description = 'Shortcut to execute GOS script'; ^
 $Shortcut.IconLocation = '%TARGET_CMD%,0'; ^
 $Shortcut.Save()
 
-echo Shortcut GOS created on Desktop.
+echo Shortcut GOS Beta created on Desktop.
 pause
 exit
 
