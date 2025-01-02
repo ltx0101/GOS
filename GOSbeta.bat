@@ -291,15 +291,14 @@ sc config bits start= auto
 net start bits
 sc config CryptSvc start= auto
 net start CryptSvc
-sc config MSIServer start= demand
+sc config MSIServer start= manual
 net start MSIServer
 sc config DoSvc start= auto
 net start DoSvc
-sc config NcaSvc start= demand
+sc config NcaSvc start= manual
 net start NcaSvc
 sc config UsoSvc start= auto
 net start UsoSvc
-sfc /scannow
 
 echo Windows Update started!
 set /p restart="Would you like to restart your PC now? (Y/N): "
