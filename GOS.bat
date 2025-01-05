@@ -69,7 +69,7 @@ for %%S in (
   "BITS" "SysMain" "SSDPSRV" "WSearch" "WbioSrvc" "Spooler" "RemoteRegistry" 
   "wercplsupport" "DPS" "TermService" "WpcMonSvc" "DiagTrack" "MapsBroker" "wisvc" 
   "icssvc" "CertPropSvc" "PhoneSvc" "BthAvctpSvc" "lmhosts" "WerSvc" "RmSvc" 
-  "DusmSvc" "TabletInputService" 
+  "DusmSvc" "TabletInputService" "wuauserv"
 ) do sc config %%S start= disabled
 exit
 
@@ -123,7 +123,7 @@ for %%S in (
   "BITS" "SysMain" "SSDPSRV" "WSearch" "WbioSrvc" "Spooler" "RemoteRegistry" 
   "wercplsupport" "DPS" "TermService" "WpcMonSvc" "DiagTrack" "MapsBroker" "wisvc" 
   "icssvc" "CertPropSvc" "PhoneSvc" "BthAvctpSvc" "lmhosts" "WerSvc" "RmSvc" 
-  "DusmSvc" "TabletInputService" 
+  "DusmSvc" "TabletInputService" "wuauserv"
 ) do sc config %%S start= disabled
 
 
