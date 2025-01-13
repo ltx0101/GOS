@@ -54,7 +54,7 @@ The script provides a range of optimization and maintenance options:
 5. **Network Optimize**  
    Optimizes network settings by modifying registry keys, disabling unnecessary and potentially performance-impacting features, tweaking TCP/IP configurations, disabling network adapter offload features and flushing the DNS cache. A system restart is required afterwards
 
-6. **Enable Windows Update**
+6. **Enable Windows Update**  
    Start the "Windows Update" service, it also starts a predefined list of other services and configures specific services to start on demand. A restart is recommended afterward.
 
 7. **Create GOS Shortcut**  
