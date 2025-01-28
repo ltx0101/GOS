@@ -7,7 +7,8 @@
 
 GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed.
 
-![Capture](https://github.com/user-attachments/assets/81613314-6525-4d0b-b06a-cb5fa56b4a8f)
+![image](https://github.com/user-attachments/assets/bd4a63c7-0972-4873-ac74-845d796dadf2)
+
 
 
 
