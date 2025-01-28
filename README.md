@@ -35,8 +35,8 @@ The script provides a range of optimization and maintenance options:
 1. **Enable Game Mode**  
    Activates settings to boost gaming performance by reducing background processes and optimizing system resources.
 
-2. **Game Mode + Network Fix**  
-   Extends Game Mode with network optimizations, ideal for players who experience network lag or connection issues during gameplay.
+2. **Network Optimize** 
+   Optimizes network settings by modifying registry keys, disabling unnecessary and potentially performance-impacting features, tweaking TCP/IP configurations, disabling network adapter offload features and flushing the DNS cache. A system restart is required afterwards
 
 3. **Repair Windows**  
    Runs a series of maintenance commands to repair the system environment, restore health, and clear unnecessary files. A system restart is recommended after this option to finalize repairs.
@@ -44,20 +44,9 @@ The script provides a range of optimization and maintenance options:
 4. **Restore Default Settings**  
    Re-enables any services or settings disabled during optimization, restoring the system to its default state. A restart is recommended afterward.
 
-5. **Network Optimize**  
-   Optimizes network settings by modifying registry keys, disabling unnecessary and potentially performance-impacting features, tweaking TCP/IP configurations, disabling network adapter offload features and flushing the DNS cache. A system restart is required afterwards
-
-6. **Enable Windows Update**  
-   Start the "Windows Update" service, it also starts a predefined list of other services and configures specific services to start on demand. A restart is recommended afterward.
-
-7. **Create GOS Shortcut**  
+5. **Create GOS Shortcut**  
    Creates a Desktop GOS Shortcut.
  
-8. **Winget Installer**  
-   Installs Winget, then prompts the user to update all apps using Winget in a separate PowerShell window.
-   
-9. **Exit**  
-   Exits the script without making any changes.
 ## Requirements
 
 - Windows 10/11 operating system with Command Prompt (cmd) support.
