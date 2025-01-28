@@ -5,7 +5,7 @@
 
 
 
-GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed. This script also offers convenient options to install the Windows Package Manager (winget) and perform system cleanup.
+GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed.
 
 ![Capture](https://github.com/user-attachments/assets/81613314-6525-4d0b-b06a-cb5fa56b4a8f)
 
@@ -16,22 +16,17 @@ GOS is a comprehensive batch script created for Windows users to streamline thei
 
 
 
-# Launch command (Stable)
+# Launch command
 
 ### PowerShell
 ```ps1
-iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat" -OutFile "GOS.bat"; .\GOS.bat
+iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOSbeta.ps1" -OutFile "GOSbeta.ps1"; .\GOSbeta.ps1
 ```
 ### CMD
 ```ps1
-PowerShell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.bat' -OutFile 'GOS.bat'; Start-Process -FilePath 'GOS.bat'"
+PowerShell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1' -OutFile 'GOS.ps1'; Start-Process -FilePath 'GOS.ps1'"
 ```
-# Launch command (Beta) **(NOT RECOMMENDED)**
 
-### PowerShell
-```ps1
-iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOSbeta.bat" -OutFile "GOSbeta.bat"; .\GOSbeta.bat
-```
 
 
 
