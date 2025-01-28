@@ -20,12 +20,9 @@ GOS is a comprehensive batch script created for Windows users to streamline thei
 
 ### PowerShell
 ```ps1
-iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOSbeta.ps1" -OutFile "GOSbeta.ps1"; .\GOSbeta.ps1
+iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1" -OutFile "GOS.ps1"; .\GOS.ps1
 ```
-### CMD
-```ps1
-PowerShell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1' -OutFile 'GOS.ps1'; Start-Process -FilePath 'GOS.ps1'"
-```
+
 
 
 
