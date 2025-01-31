@@ -44,7 +44,8 @@ function Enable-GameMode {
     "ActiveX Installer", "AxInstSV", "Application Layer Gateway Service", "Auto Time Zone Updater", "Bluetooth Audio Gateway Service", "Bluetooth Support Service", "BranchCache",
     "Capability Access Manager Service", "Cloud Backup and Restore Service", "Delivery Optimization", "Function Discovery Provider Host",
     "Function Discovery Resource Publication", "Geolocation Service", "GraphicsPerfSvc", "Hyper-V Services", "Internet Connection Sharing (ICS)",
-    "Language Experience Service", "Microsoft Store Install Service", "Offline Files", "Performance Logs & Alerts", "Print Spooler", "Remote Access Auto Connection Manager"
+    "Language Experience Service", "Microsoft Store Install Service", "Offline Files", "Performance Logs & Alerts", "Print Spooler", "Remote Access Auto Connection Manager", "QWAVE"
+    "vmickvpexchange", "vmicguestinterface", "vmicshutdown", "vmicheartbeat", "vmicvmsession", "vmicrdv", "vmictimesync", "vmicvss", "AppXSvc", "BDESVC", "Fax", "WaaSMedicSvc"
 )
 
 foreach ($service in $services) {
