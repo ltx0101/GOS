@@ -159,7 +159,7 @@ $servicesToStart = @(
     "Language Experience Service", "Microsoft Store Install Service", "Offline Files", "Performance Logs & Alerts", "Print Spooler", "Remote Access Auto Connection Manager", "QWAVE"
     "vmickvpexchange", "vmicguestinterface", "vmicshutdown", "vmicheartbeat", "vmicvmsession", "vmicrdv", "vmictimesync", "vmicvss", "AppXSvc", "BDESVC", "Fax", "WaaSMedicSvc"
     "wlidsvc", "LicenseManager", "AppXSvc" , "FontCache", "WpnService"
-
+)
 foreach ($service in $servicesToStart) {
     try {
         Start-Service -Name $service -ErrorAction Stop
