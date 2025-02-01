@@ -159,7 +159,7 @@ $servicesToStart = @(
     "Language Experience Service", "Microsoft Store Install Service", "Offline Files", "Performance Logs & Alerts", "Print Spooler", "Remote Access Auto Connection Manager", "QWAVE"
     "vmickvpexchange", "vmicguestinterface", "vmicshutdown", "vmicheartbeat", "vmicvmsession", "vmicrdv", "vmictimesync", "vmicvss", "AppXSvc", "BDESVC", "Fax", "WaaSMedicSvc"
     "wlidsvc", "LicenseManager", "AppXSvc" , "FontCache", "WpnService"
-)
+    )
 foreach ($service in $servicesToStart) {
     try {
         Start-Service -Name $service -ErrorAction Stop
@@ -192,8 +192,8 @@ if ($restart -eq "Y" -or $restart -eq "y") {
 } else {
     Write-Host "You can restart the PC later manually."
 }
-}
 
+}
 
 function Shortcut {
 
@@ -298,6 +298,9 @@ $tooltipShortcut = New-Object System.Windows.Forms.ToolTip
 $tooltipShortcut.SetToolTip($btnShortcut, "Click to create a shortcut.")
 $btnShortcut.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
 
+
+
+# Add buttons to the form
 $form.Controls.Add($btnGameMode)
 $form.Controls.Add($btnClean)
 $form.Controls.Add($btnNetwork)
@@ -305,4 +308,5 @@ $form.Controls.Add($btnRepair)
 $form.Controls.Add($btnRestore)
 $form.Controls.Add($btnShortcut)
 
+# Run the form
 [void]$form.ShowDialog()
