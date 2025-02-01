@@ -24,7 +24,7 @@ GOS is a comprehensive batch script created for Windows users to streamline thei
 iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1" -OutFile "GOS.ps1"; .\GOS.ps1
 ```
 <details>
-<summary>Error "Running Scripts is Disabled on this System"</summary>
+<summary>❗Error "Running Scripts is Disabled on this System❗"</summary>
 
 ### Run this command in PowerShell:
 
