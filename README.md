@@ -44,6 +44,7 @@ The script provides a range of optimization and maintenance options:
 1. **Enable Game Mode**  
    Activates settings to boost gaming performance by reducing background processes and optimizing system resources.
 
+
 2. **Clean Windows** 
    Cleans unnecessary temp files, DirectX Cache, old Windows update files, etc.
 
@@ -51,14 +52,18 @@ The script provides a range of optimization and maintenance options:
 3. **Optimize Network** 
    Optimizes network settings by modifying registry keys, disabling unnecessary and potentially performance-impacting features, tweaking TCP/IP configurations, disabling network adapter offload features and flushing the DNS cache. A system restart is required afterwards
 
+
 4. **Repair Windows**  
    Runs a series of maintenance commands to repair the system environment, restore health, and clear unnecessary files. A system restart is recommended after this option to finalize repairs.
+
 
 5. **Restore Default**  
    Re-enables any services or settings disabled during optimization, restoring the system to its default state. A restart is recommended afterward.
 
+
 6. **Shortcut**  
    Creates a Desktop GOS Shortcut.
+
  
 ## Requirements
 
