@@ -7,7 +7,8 @@
 
 GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed.
 
-![image](https://github.com/user-attachments/assets/bd4a63c7-0972-4873-ac74-845d796dadf2)
+![image](https://github.com/user-attachments/assets/e0baa917-8350-40c9-871f-280b461c1819)
+
 
 
 
@@ -43,16 +44,20 @@ The script provides a range of optimization and maintenance options:
 1. **Enable Game Mode**  
    Activates settings to boost gaming performance by reducing background processes and optimizing system resources.
 
-2. **Network Optimize** 
+2. **Clean Windows** 
+   Cleans unnecessary temp files, DirectX Cache, old Windows update files, etc.
+
+
+3. **Optimize Network** 
    Optimizes network settings by modifying registry keys, disabling unnecessary and potentially performance-impacting features, tweaking TCP/IP configurations, disabling network adapter offload features and flushing the DNS cache. A system restart is required afterwards
 
-3. **Repair Windows**  
+4. **Repair Windows**  
    Runs a series of maintenance commands to repair the system environment, restore health, and clear unnecessary files. A system restart is recommended after this option to finalize repairs.
 
-4. **Restore Default Settings**  
+5. **Restore Default**  
    Re-enables any services or settings disabled during optimization, restoring the system to its default state. A restart is recommended afterward.
 
-5. **Create GOS Shortcut**  
+6. **Shortcut**  
    Creates a Desktop GOS Shortcut.
  
 ## Requirements
