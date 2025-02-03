@@ -5,7 +5,7 @@
 
 
 
-GOS is a comprehensive batch script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed.
+GOS is a comprehensive PowerShell script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed.
 
 ![image](https://github.com/user-attachments/assets/e0baa917-8350-40c9-871f-280b461c1819)
 
