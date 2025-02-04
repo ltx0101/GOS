@@ -6,7 +6,8 @@
 
 GOS is a comprehensive PowerShell script created for Windows users to streamline their gaming setup, enhance network performance, repair the Windows environment, and revert changes to default settings when needed.
 
-![image](https://github.com/user-attachments/assets/e070fbba-1d26-4d68-a0f3-899cd61d66f0)
+![image](https://github.com/user-attachments/assets/6dcb4394-bf31-480d-a34a-b3e93cf9ef23)
+
 
 
 
