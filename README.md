@@ -21,7 +21,7 @@ GOS is a comprehensive PowerShell script created for Windows users to streamline
 
 # Launch command
 
-### PowerShell
+## PowerShell
 ```ps1
 iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1" -OutFile "GOS.ps1"; .\GOS.ps1
 ```
