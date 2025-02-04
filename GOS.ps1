@@ -61,7 +61,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "                                                  GOS"
+$form.Text = "                                           GOS"
 $form.ForeColor = [System.Drawing.Color]::White
 $form.Size = New-Object System.Drawing.Size(370, 280)
 $form.StartPosition = "CenterScreen"
