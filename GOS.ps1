@@ -9,7 +9,7 @@ Add-Type -AssemblyName System.Drawing
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "                                                  GOS"
 $form.ForeColor = [System.Drawing.Color]::White
-$form.Size = New-Object System.Drawing.Size(350, 325)
+$form.Size = New-Object System.Drawing.Size(350, 370)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = [System.Drawing.Color]::FromArgb(25, 25, 25)
 $form.MaximizeBox = $false
@@ -222,6 +222,41 @@ $Shortcut.Save()
 Show-Message "Shortcut GOS created on Desktop."
 }
 
+function Debloat {
+
+$appsToRemove = @(
+    "Microsoft.3DBuilder", "Microsoft.Microsoft3DViewer", "Microsoft.AppConnector", "Microsoft.BingFinance", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingWeather", "Microsoft.BingFoodAndDrink",
+"Microsoft.BingHealthAndFitness", "Microsoft.BingTravel", "Microsoft.MinecraftUWP", "Microsoft.GetHelp", "Microsoft.Getstarted", "Microsoft.MicrosoftSolitaireCollection", "Microsoft.NetworkSpeedTest", "Microsoft.News", "Microsoft.Office.Lens",
+"Microsoft.Office.Sway", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.Office.Desktop", "Microsoft.Print3D", "Microsoft.SkypeApp", "Microsoft.Whiteboard", "Microsoft.WindowsFeedbackHub", "Microsoft.WindowsMaps",
+"Microsoft.MicrosoftOfficeHub", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxGameCallableUI", "Microsoft.MixedReality.Portal", "Microsoft.People",
+"Microsoft.WindowsAlarms", "Microsoft.WindowsSoundRecorder", "Microsoft.YourPhone", "Microsoft.ZuneMusic", "Microsoft.ZuneVideo", "Microsoft.WindowsStickyNotes", "*EclipseManager*", "*ActiproSoftwareLLC*", "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
+"*Duolingo-LearnLanguagesforFree*",  "*PandoraMediaInc*",  "*CandyCrush*",  "*BubbleWitch3Saga*",  "*Wunderlist*",  "*Flipboard*",  "*Twitter*",  "*Facebook*",  "*Royal Revolt*",  "*Sway*",  "*Speed Test*",  "*Dolby*",  "*Viber*",  "*ACGMediaPlayer*",  "*Netflix*",
+"*Roblox*", "*BytedancePte.Ltd.TikTok*", "*AmazonVideo.PrimeVideo*", "*MarchOfEmpires*", "*LinkedInforWindows*", "*HiddenCityMysteryofShadows*", "*Hulu*", "*HiddenCity*", "*SpotifyAB.SpotifyMusic*", "*AdobePhotoshopExpress*",
+"Microsoft.549981C3F5F10", "Disney.37853FC22B2CE", "MicrosoftTeams", "Microsoft.Todos", "Microsoft.GamingApp", "Microsoft.XboxGamingOverlay", "microsoft.windowscommunicationsapps"
+
+)
+
+foreach ($app in $appsToRemove) {
+    $processes = Get-Process | Where-Object { $_.ProcessName -like "*$app*" }
+    if ($processes) {
+        Write-Host "Stopping process: $app"
+        $processes | Stop-Process -Force -ErrorAction SilentlyContinue
+    }
+}
+
+foreach ($app in $appsToRemove) {
+    Write-Host "Removing AppxPackage: $app"
+    Get-AppxPackage -AllUsers | Where-Object { $_.Name -Like $app } | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+}
+
+foreach ($app in $appsToRemove) {
+    Write-Host "Removing provisioned package: $app"
+    Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -Like $app } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+}
+Show-Message "All selected apps have been removed."
+
+}
+
 # Game Mode Button
 $btnGameMode = New-Object System.Windows.Forms.Button
 $btnGameMode.Text = "Enable Game Mode"
@@ -300,6 +335,18 @@ $tooltipShortcut = New-Object System.Windows.Forms.ToolTip
 $tooltipShortcut.SetToolTip($btnShortcut, "Click to create a shortcut.")
 $btnShortcut.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
 
+# Debloat Button
+$btnDebloat = New-Object System.Windows.Forms.Button
+$btnDebloat.Text = "Debloat"
+$btnDebloat.Size = New-Object System.Drawing.Size(150, 40)
+$btnDebloat.Location = New-Object System.Drawing.Point(90, 280)
+$btnDebloat.Add_Click({ Debloat })
+$btnDebloat.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnDebloat.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
+$btnDebloat.FlatAppearance.BorderSize = 0
+$tooltipDebloat = New-Object System.Windows.Forms.ToolTip
+$tooltipDebloat.SetToolTip($btnDebloat, "Click to remove any Microsoft pre-installed Bloatware.")
+$btnDebloat.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
 
 
 # Add buttons to the form
@@ -309,6 +356,7 @@ $form.Controls.Add($btnNetwork)
 $form.Controls.Add($btnRepair)
 $form.Controls.Add($btnRestore)
 $form.Controls.Add($btnShortcut)
+$form.Controls.Add($btnDebloat)
 
 # Run the form
 [void]$form.ShowDialog()
