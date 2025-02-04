@@ -46,7 +46,7 @@ The script provides a range of optimization and maintenance options:
    Activates settings to boost gaming performance by reducing background processes and optimizing system resources.
 
 
-2. **Clean Windows** 
+2. **Clean Windows**  
    Cleans unnecessary temp files, DirectX Cache, old Windows update files, etc.
 
 
