@@ -9,7 +9,7 @@ Add-Type -AssemblyName System.Drawing
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "                                                  GOS"
 $form.ForeColor = [System.Drawing.Color]::White
-$form.Size = New-Object System.Drawing.Size(350, 370)
+$form.Size = New-Object System.Drawing.Size(370, 280)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = [System.Drawing.Color]::FromArgb(25, 25, 25)
 $form.MaximizeBox = $false
@@ -259,94 +259,94 @@ Show-Message "All selected apps have been removed."
 
 # Game Mode Button
 $btnGameMode = New-Object System.Windows.Forms.Button
-$btnGameMode.Text = "Enable Game Mode"
-$btnGameMode.Size = New-Object System.Drawing.Size(150, 40)
-$btnGameMode.Location = New-Object System.Drawing.Point(90, 10)
+$btnGameMode.Text = "Enable Game Mode " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0xA1))
+$btnGameMode.Size = New-Object System.Drawing.Size(230, 40)
+$btnGameMode.Location = New-Object System.Drawing.Point(65, 20)
 $btnGameMode.Add_Click({ Enable-GameMode })
 $btnGameMode.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnGameMode.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
 $btnGameMode.FlatAppearance.BorderSize = 0
 $tooltipGameMode = New-Object System.Windows.Forms.ToolTip
 $tooltipGameMode.SetToolTip($btnGameMode, "Click to enable Game Mode for better performance.")
-$btnGameMode.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
+$btnGameMode.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 15, [System.Drawing.FontStyle]::Regular)
 
 # Clean Windows Button
 $btnClean = New-Object System.Windows.Forms.Button
-$btnClean.Text = "Clean Windows"
+$btnClean.Text = "Clean Windows " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x97,0x91))
 $btnClean.Size = New-Object System.Drawing.Size(150, 40)
-$btnClean.Location = New-Object System.Drawing.Point(90, 55)
+$btnClean.Location = New-Object System.Drawing.Point(10, 80)
 $btnClean.Add_Click({ Clean-Windows })
 $btnClean.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnClean.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
 $btnClean.FlatAppearance.BorderSize = 0
 $tooltipClean = New-Object System.Windows.Forms.ToolTip
 $tooltipClean.SetToolTip($btnClean, "Click to clean Windows.")
-$btnClean.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
+$btnClean.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
 # Network Optimization Button
 $btnNetwork = New-Object System.Windows.Forms.Button
-$btnNetwork.Text = "Optimize Network"
+$btnNetwork.Text = "Optimize Network " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x8C,0x90))
 $btnNetwork.Size = New-Object System.Drawing.Size(150, 40)
-$btnNetwork.Location = New-Object System.Drawing.Point(90, 100)
+$btnNetwork.Location = New-Object System.Drawing.Point(10, 130)
 $btnNetwork.Add_Click({ Optimize-Network })
 $btnNetwork.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnNetwork.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
 $btnNetwork.FlatAppearance.BorderSize = 0
 $tooltipNetwork = New-Object System.Windows.Forms.ToolTip
 $tooltipNetwork.SetToolTip($btnNetwork, "Click to optimize network settings.")
-$btnNetwork.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
+$btnNetwork.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
 # Repair Windows Button
 $btnRepair = New-Object System.Windows.Forms.Button
-$btnRepair.Text = "Repair Windows"
+$btnRepair.Text = "Repair Windows " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x94,0xA7))
 $btnRepair.Size = New-Object System.Drawing.Size(150, 40)
-$btnRepair.Location = New-Object System.Drawing.Point(90, 145)
+$btnRepair.Location = New-Object System.Drawing.Point(195, 130)
 $btnRepair.Add_Click({ Repair-Windows })
 $btnRepair.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnRepair.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
 $btnRepair.FlatAppearance.BorderSize = 0
 $tooltipRepair = New-Object System.Windows.Forms.ToolTip
 $tooltipRepair.SetToolTip($btnRepair, "Click to repair Windows system files.")
-$btnRepair.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
+$btnRepair.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
 # Restore Defaults Button
 $btnRestore = New-Object System.Windows.Forms.Button
-$btnRestore.Text = "Restore Defaults"
+$btnRestore.Text = "Restore Defaults " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0x99, 0xEF,0xB8,0x8F))
 $btnRestore.Size = New-Object System.Drawing.Size(150, 40)
-$btnRestore.Location = New-Object System.Drawing.Point(90, 190)
+$btnRestore.Location = New-Object System.Drawing.Point(195, 80)
 $btnRestore.Add_Click({ Restore-Defaults })
 $btnRestore.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnRestore.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
 $btnRestore.FlatAppearance.BorderSize = 0
 $tooltipRestore = New-Object System.Windows.Forms.ToolTip
 $tooltipRestore.SetToolTip($btnRestore, "Click to restore default settings.")
-$btnRestore.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
+$btnRestore.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
 # Shortcut Button
 $btnShortcut = New-Object System.Windows.Forms.Button
-$btnShortcut.Text = "Shortcut"
+$btnShortcut.Text = "Shortcut " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x86,0xAA, 0xEF,0xB8,0x8F))
 $btnShortcut.Size = New-Object System.Drawing.Size(150, 40)
-$btnShortcut.Location = New-Object System.Drawing.Point(90, 235)
+$btnShortcut.Location = New-Object System.Drawing.Point(195, 180)
 $btnShortcut.Add_Click({ Shortcut })
 $btnShortcut.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnShortcut.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
 $btnShortcut.FlatAppearance.BorderSize = 0
 $tooltipShortcut = New-Object System.Windows.Forms.ToolTip
 $tooltipShortcut.SetToolTip($btnShortcut, "Click to create a shortcut.")
-$btnShortcut.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
+$btnShortcut.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
 # Debloat Button
 $btnDebloat = New-Object System.Windows.Forms.Button
-$btnDebloat.Text = "Debloat"
+$btnDebloat.Text = "Debloat " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0xA7,0xB9))
 $btnDebloat.Size = New-Object System.Drawing.Size(150, 40)
-$btnDebloat.Location = New-Object System.Drawing.Point(90, 280)
+$btnDebloat.Location = New-Object System.Drawing.Point(10, 180)
 $btnDebloat.Add_Click({ Debloat })
 $btnDebloat.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnDebloat.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
 $btnDebloat.FlatAppearance.BorderSize = 0
 $tooltipDebloat = New-Object System.Windows.Forms.ToolTip
 $tooltipDebloat.SetToolTip($btnDebloat, "Click to remove any Microsoft pre-installed Bloatware.")
-$btnDebloat.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Regular)
+$btnDebloat.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
 
 # Add buttons to the form
