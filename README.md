@@ -1,5 +1,4 @@
-# GOS
-## Gaming Optimization Script
+# GOS // Gaming Optimization Script
 ![2](https://github.com/user-attachments/assets/7c9a08cb-5b20-46ae-81af-c404b2ea79c8)
 
 
