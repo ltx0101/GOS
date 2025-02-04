@@ -69,6 +69,11 @@ $form.BackColor = [System.Drawing.Color]::FromArgb(25, 25, 25)
 $form.MaximizeBox = $false
 $form.MinimizeBox = $false
 $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+$form.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon("https://github.com/ltx0101/GOS/blob/main/GOS.ico")
+$iconUrl = "https://github.com/ltx0101/GOS/raw/main/GOS.ico"
+$iconPath = "$env:Temp\GOS.ico"
+Invoke-WebRequest -Uri $iconUrl -OutFile $iconPath
+$form.Icon = New-Object System.Drawing.Icon($iconPath)
 
 function Show-Message($message) {
     [System.Windows.Forms.MessageBox]::Show($message, "GOS", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
