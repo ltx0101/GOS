@@ -3,6 +3,60 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit
 }
 
+$Host.UI.RawUI.ForegroundColor = "White"
+$Host.UI.RawUI.BackgroundColor = "Black"
+cls
+$ComputerName = $env:COMPUTERNAME
+$OS = Get-CimInstance Win32_OperatingSystem
+$CPU = Get-CimInstance Win32_Processor
+$RAM = Get-CimInstance Win32_ComputerSystem
+$Disk = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='C:'"
+$IP = Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.InterfaceAlias -notlike "Loopback*"}
+$GPU = Get-CimInstance Win32_VideoController
+$BIOS = Get-CimInstance Win32_BIOS
+$Motherboard = Get-CimInstance Win32_BaseBoard
+$MemoryDevices = Get-CimInstance Win32_PhysicalMemory
+$Battery = Get-CimInstance Win32_Battery
+$SoundDevices = Get-CimInstance Win32_SoundDevice
+
+Write-Host "System Information for: $ComputerName" -ForegroundColor Green
+Write-Host "----------------------------------------"
+Write-Host "Operating System: $($OS.Caption) ($($OS.Version))"
+Write-Host " "
+Write-Host "CPU:" -ForegroundColor Yellow
+Write-Host "$($CPU.Name)"
+Write-Host " "
+Write-Host "Total RAM: $([math]::Round($RAM.TotalPhysicalMemory / 1GB, 2)) GB" -ForegroundColor Yellow
+foreach ($mem in $MemoryDevices) {
+    Write-Host "Memory Stick: $([math]::Round($mem.Capacity / 1GB, 2)) GB - Speed: $($mem.Speed) MHz"
+}
+Write-Host " "
+Write-Host "Graphics processing unit:" -ForegroundColor Yellow
+Write-Host "$($GPU.Name)"
+Write-Host " "
+Write-Host "Disk Space:" -ForegroundColor Yellow
+Write-Host "$([math]::Round($Disk.Size / 1GB, 2)) GB (Free: $([math]::Round($Disk.FreeSpace / 1GB, 2)) GB)"
+Write-Host " "
+Write-Host "Motherboard: $($Motherboard.Manufacturer) $($Motherboard.Product)" -ForegroundColor Yellow
+Write-Host "BIOS Version: $($BIOS.SMBIOSBIOSVersion)"
+Write-Host " "
+Write-Host "Battery Information:" -ForegroundColor Yellow
+if ($Battery) {
+    Write-Host "Battery Status: $($Battery.BatteryStatus) - Estimated Charge Remaining: $($Battery.EstimatedChargeRemaining)%"
+} else {
+    Write-Host "No battery detected."
+}
+Write-Host " "
+Write-Host "Sound Devices:" -ForegroundColor Yellow
+foreach ($sound in $SoundDevices) {
+    Write-Host "$($sound.Name)"
+}
+Write-Host " "
+Write-Host "Network Adapters:" -ForegroundColor Cyan
+foreach ($adapter in $IP) {
+    Write-Host "$($adapter.InterfaceAlias): $($adapter.IPAddress)"
+}
+
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
