@@ -119,9 +119,11 @@ Start-Process -FilePath "reg.exe" -ArgumentList "add HKLM\Software\Microsoft\Win
 Start-Process -FilePath "reg.exe" -ArgumentList "add HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings /v EnableHttp2 /t REG_DWORD /d 1 /f" -Verb RunAs
 Start-Service -Name "winnat" -ErrorAction SilentlyContinue
 
-ipconfig /flushdns
 ipconfig /release
 ipconfig /renew
+ipconfig /flushdns
+netsh int ip reset
+netsh winsock reset
 
 Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TcpAckFrequency" -ErrorAction SilentlyContinue
 Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TCPNoDelay" -ErrorAction SilentlyContinue
