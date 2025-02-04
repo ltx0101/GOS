@@ -127,7 +127,8 @@ foreach ($serviced in $servicesd) {
 }
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TcpAckFrequency" -Value 1 -PropertyType DWord -Force
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TCPNoDelay" -Value 1 -PropertyType DWord -Force
-Show-Message "Game Mode enabled!"
+cls
+Write-Host "Game Mode enabled!" -ForegroundColor Green
 }
 
 
@@ -181,12 +182,15 @@ netsh winsock reset
 
 Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TcpAckFrequency" -ErrorAction SilentlyContinue
 Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TCPNoDelay" -ErrorAction SilentlyContinue
-Show-Message "Network optimization applied!"
+cls
+Write-Host "Network optimization applied!" -ForegroundColor Green
 }
 
 
 function Repair-Windows {
     Start-Process cmd.exe -ArgumentList "/K", "powershell.exe -Command ""taskkill /f /im explorer.exe; chkdsk /scan; DISM /Online /Cleanup-Image /RestoreHealth; sfc /scannow; shutdown /r /t 5; exit"""
+    cls
+    Write-Host "Your computer will automatically restart, this might take a while." -ForegroundColor Green
 }
 
 
@@ -273,11 +277,12 @@ $Shortcut.WindowStyle = 1
 $Shortcut.Description = "Shortcut to execute GOS script"
 $Shortcut.IconLocation = $IconPath
 $Shortcut.Save()
-Show-Message "Shortcut GOS created on Desktop."
+cls
+Write-Host "Shortcut GOS created on Desktop." -ForegroundColor Green
 }
 
 function Debloat {
-
+cls
 $appsToRemove = @(
     "Microsoft.3DBuilder", "Microsoft.Microsoft3DViewer", "Microsoft.AppConnector", "Microsoft.BingFinance", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingWeather", "Microsoft.BingFoodAndDrink",
 "Microsoft.BingHealthAndFitness", "Microsoft.BingTravel", "Microsoft.MinecraftUWP", "Microsoft.GetHelp", "Microsoft.Getstarted", "Microsoft.MicrosoftSolitaireCollection", "Microsoft.NetworkSpeedTest", "Microsoft.News", "Microsoft.Office.Lens",
@@ -308,9 +313,8 @@ foreach ($app in $appsToRemove) {
     Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -Like $app } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
 }
 cls
-Write-Output "Bloatware has been removed."
+Write-Host "Bloatware has been removed."
 
-Write-Output "Blocking telemetry via Hosts file..."
 $hostsPath = "C:\Windows\System32\drivers\etc\hosts"
 $tempHostsPath = "$env:TEMP\hosts.tmp"
 
@@ -328,12 +332,12 @@ foreach ($telemetryHost in $telemetryHosts) {
 }
 Copy-Item -Path $tempHostsPath -Destination $hostsPath -Force
 Remove-Item -Path $tempHostsPath -Force
-Write-Output "Telemetry has been disabled."
+Write-Host "Telemetry has been disabled."
 
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DoNotConnectToWindowsUpdateInternetLocations" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DisableWindowsUpdateAccess" -Type DWord -Value 1
-Write-Output "Windows Update has been optimized"
+Write-Host "Windows Update has been optimized"
 
 $tasksToDisable = @(
     "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator",
@@ -352,7 +356,11 @@ Write-Output "Disabled Windows Error Reporting"
 
 Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
 Start-Process explorer
-Show-Message "Debloat complete!"
+Write-Host " "
+Write-Host " "
+Write-Host " "
+Write-Host " "
+Write-Host "Debloat complete!" -ForegroundColor Green
 }
 
 # Game Mode Button
