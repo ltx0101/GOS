@@ -253,8 +253,52 @@ foreach ($app in $appsToRemove) {
     Write-Host "Removing provisioned package: $app"
     Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -Like $app } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
 }
-Show-Message "All selected apps have been removed."
+cls
+Write-Output "Bloatware has been removed."
 
+Write-Output "Blocking telemetry via Hosts file..."
+$hostsPath = "C:\Windows\System32\drivers\etc\hosts"
+$tempHostsPath = "$env:TEMP\hosts.tmp"
+
+Copy-Item -Path $hostsPath -Destination $tempHostsPath -Force
+$telemetryHosts = @(
+    "vortex.data.microsoft.com",
+    "settings-win.data.microsoft.com",
+    "watson.telemetry.microsoft.com",
+    "telemetry.microsoft.com",
+    "oca.telemetry.microsoft.com",
+    "sqm.telemetry.microsoft.com"
+)
+foreach ($telemetryHost in $telemetryHosts) {
+    Add-Content -Path $tempHostsPath -Value "127.0.0.1 $telemetryHost"
+}
+Copy-Item -Path $tempHostsPath -Destination $hostsPath -Force
+Remove-Item -Path $tempHostsPath -Force
+Write-Output "Telemetry has been disabled."
+
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Force | Out-Null
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DoNotConnectToWindowsUpdateInternetLocations" -Type DWord -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DisableWindowsUpdateAccess" -Type DWord -Value 1
+Write-Output "Windows Update has been optimized"
+
+$tasksToDisable = @(
+    "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator",
+    "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip",
+    "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser",
+    "\Microsoft\Windows\Application Experience\ProgramDataUpdater"
+)
+foreach ($task in $tasksToDisable) {
+    if (Get-ScheduledTask -TaskPath $task -ErrorAction SilentlyContinue) {
+        Disable-ScheduledTask -TaskPath $task -ErrorAction SilentlyContinue
+    }
+}
+
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
+Write-Output "Disabled Windows Error Reporting"
+
+Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+Start-Process explorer
+Show-Message "Debloat complete!"
 }
 
 # Game Mode Button
