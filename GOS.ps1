@@ -459,6 +459,19 @@ $tooltipDebloat = New-Object System.Windows.Forms.ToolTip
 $tooltipDebloat.SetToolTip($btnDebloat, "Click to remove any Microsoft pre-installed Bloatware.")
 $btnDebloat.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
+# Processes Counter
+$proc = New-Object System.Windows.Forms.Label
+$proc.Text = "Processes Running:"
+$proc.AutoSize = $true
+$proc.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 8,[System.Drawing.FontStyle]::Regular)
+$proc.Location = New-Object System.Drawing.Point(120, 240)
+$Timer = New-Object System.Windows.Forms.Timer
+$Timer.Interval = 1000
+$Timer.Add_Tick({
+    $ProcessCount = (Get-Process | Measure-Object | Select-Object -ExpandProperty Count)
+    $proc.Text = "Processes Running: $ProcessCount"
+})
+$Timer.Start()
 
 # Add buttons to the form
 $form.Controls.Add($btnGameMode)
@@ -468,6 +481,7 @@ $form.Controls.Add($btnRepair)
 $form.Controls.Add($btnRestore)
 $form.Controls.Add($btnShortcut)
 $form.Controls.Add($btnDebloat)
+$form.Controls.Add($proc)
 
 # Run the form
 [void]$form.ShowDialog()
