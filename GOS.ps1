@@ -63,7 +63,7 @@ Add-Type -AssemblyName System.Drawing
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "                                           GOS"
 $form.ForeColor = [System.Drawing.Color]::White
-$form.Size = New-Object System.Drawing.Size(370, 280)
+$form.Size = New-Object System.Drawing.Size(370, 300)
 $form.StartPosition = "CenterScreen"
 $form.BackColor = [System.Drawing.Color]::FromArgb(25, 25, 25)
 $form.MaximizeBox = $false
@@ -357,10 +357,10 @@ foreach ($task in $tasksToDisable) {
 
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
 
-# Define the URL of the services list file
+
 $servicesFileUrl = "https://raw.githubusercontent.com/ltx0101/GOS/main/Services%20list.txt"
 
-# Download the file content
+
 try {
     $servicesContent = (Invoke-WebRequest -Uri $servicesFileUrl).Content -split "`r`n"
 } catch {
@@ -368,34 +368,33 @@ try {
     exit
 }
 
-# Initialize variables to store service name and startup type
+
 $serviceName = $null
 $startupType = $null
 
-# Loop through each line in the file
+
 foreach ($line in $servicesContent) {
-    # Trim whitespace to clean up lines
+
     $line = $line.Trim()
 
-    # Check if the line contains a service name (e.g., `"AJRouter",`)
     if ($line -match '^"([^"]+)",$') {
         $serviceName = $matches[1]
     }
-    # Check if the line contains a startup type (e.g., `"StartupType""Disabled",`)
+
     elseif ($line -match '^"StartupType""([^"]+)",?$') {
         $startupType = $matches[1]
         
-        # If both service name and startup type are set, configure the service
+
         if ($serviceName -and $startupType) {
             try {
-                # Set the service startup type
+
                 Set-Service -Name $serviceName -StartupType $startupType
                 Write-Host "Successfully set $serviceName to $startupType"
             } catch {
                 Write-Host ("Failed to set {0} to {1}: {2}" -f $serviceName, $startupType, $_.Exception.Message)
             }
             
-            # Reset variables for the next service
+
             $serviceName = $null
             $startupType = $null
         }
