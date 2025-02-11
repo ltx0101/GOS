@@ -318,7 +318,6 @@ foreach ($app in $appsToRemove) {
     Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -Like $app } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
 }
 cls
-Write-Host "Bloatware has been removed."
 
 $hostsPath = "C:\Windows\System32\drivers\etc\hosts"
 $tempHostsPath = "$env:TEMP\hosts.tmp"
@@ -337,12 +336,12 @@ foreach ($telemetryHost in $telemetryHosts) {
 }
 Copy-Item -Path $tempHostsPath -Destination $hostsPath -Force
 Remove-Item -Path $tempHostsPath -Force
-Write-Host "Telemetry has been disabled."
+
 
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DoNotConnectToWindowsUpdateInternetLocations" -Type DWord -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DisableWindowsUpdateAccess" -Type DWord -Value 1
-Write-Host "Windows Update has been optimized"
+
 
 $tasksToDisable = @(
     "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator",
@@ -357,14 +356,60 @@ foreach ($task in $tasksToDisable) {
 }
 
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
-Write-Output "Disabled Windows Error Reporting"
+
+# Define the URL of the services list file
+$servicesFileUrl = "https://raw.githubusercontent.com/ltx0101/GOS/main/Services%20list.txt"
+
+# Download the file content
+try {
+    $servicesContent = (Invoke-WebRequest -Uri $servicesFileUrl).Content -split "`r`n"
+} catch {
+    Write-Host "Failed to fetch service list: $($_.Exception.Message)"
+    exit
+}
+
+# Initialize variables to store service name and startup type
+$serviceName = $null
+$startupType = $null
+
+# Loop through each line in the file
+foreach ($line in $servicesContent) {
+    # Trim whitespace to clean up lines
+    $line = $line.Trim()
+
+    # Check if the line contains a service name (e.g., `"AJRouter",`)
+    if ($line -match '^"([^"]+)",$') {
+        $serviceName = $matches[1]
+    }
+    # Check if the line contains a startup type (e.g., `"StartupType""Disabled",`)
+    elseif ($line -match '^"StartupType""([^"]+)",?$') {
+        $startupType = $matches[1]
+        
+        # If both service name and startup type are set, configure the service
+        if ($serviceName -and $startupType) {
+            try {
+                # Set the service startup type
+                Set-Service -Name $serviceName -StartupType $startupType
+                Write-Host "Successfully set $serviceName to $startupType"
+            } catch {
+                Write-Host ("Failed to set {0} to {1}: {2}" -f $serviceName, $startupType, $_.Exception.Message)
+            }
+            
+            # Reset variables for the next service
+            $serviceName = $null
+            $startupType = $null
+        }
+    }
+}
 
 Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
 Start-Process explorer
+cls
 Write-Host " "
 Write-Host " "
-Write-Host " "
-Write-Host " "
+Write-Host "Windows Update has been optimized"
+Write-Host "Bloatware has been removed."
+Write-Host "Telemetry has been disabled."
 Write-Host "Debloat complete!" -ForegroundColor Green
 }
 
