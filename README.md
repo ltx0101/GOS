@@ -28,8 +28,12 @@ GOS is a comprehensive PowerShell script created for Windows users to streamline
 ```ps1
 iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1" -OutFile "GOS.ps1"; .\GOS.ps1
 ```
+
+---
+
+### Error "Running Scripts is Disabled on this System"
 <details>
-<summary>❗Error "Running Scripts is Disabled on this System❗"</summary>
+<summary> Click Here </summary>
 
 ### Run this command in PowerShell:
 
@@ -37,8 +41,6 @@ iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1" -Out
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 ```
 </details>
-
-
 
 
 ## Features
