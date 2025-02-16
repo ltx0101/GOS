@@ -120,7 +120,7 @@ $servicesd = @(
     "BITS","SysMain","SSDPSRV","WbioSrvc","RemoteRegistry",
     "wercplsupport","DPS","TermService","WpcMonSvc","DiagTrack","MapsBroker","wisvc",
     "icssvc","CertPropSvc","PhoneSvc","BthAvctpSvc","lmhosts","WerSvc","RmSvc",
-    "DusmSvc","TabletInputService","RetailDemo"
+    "DusmSvc","TabletInputService","RetailDemo","wuauserv"
 )
 
 foreach ($serviced in $servicesd) {
