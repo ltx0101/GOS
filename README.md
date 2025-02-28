@@ -1,3 +1,5 @@
+<div align="center">
+
 # GOS // Gaming Optimization Script
 <img src="https://github.com/user-attachments/assets/7c9a08cb-5b20-46ae-81af-c404b2ea79c8" width="300" height="120"> 
 
@@ -8,7 +10,7 @@ GOS is a comprehensive PowerShell script created for Windows users to streamline
 
 ![image](https://github.com/user-attachments/assets/6dcb4394-bf31-480d-a34a-b3e93cf9ef23) 
 
-
+</div>
 
 
 
