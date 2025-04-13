@@ -78,3 +78,16 @@ The script provides a range of optimization and maintenance options:
 
 - Windows 10/11 operating system with Command Prompt (cmd) support.
 - Administrator privileges are required to run certain commands effectively, such as system repairs and network modifications.
+
+---
+<div align="center">
+   
+[![PayPal Donate](https://img.shields.io/badge/PayPal_Donate-s?style=for-the-badge&logo=paypal&logoColor=black)](https://paypal.me/AggelosMeta)
+
+</div>
+
+<div align="center">
+  
+Made with ❤️ and PowerShell  
+
+</div>
