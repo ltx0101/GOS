@@ -28,7 +28,7 @@ GOS is a comprehensive PowerShell script created for Windows users to streamline
 
 ### Open PowerShell and paste the command below:
 ```ps1
-iwr "https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1" -OutFile "GOS.ps1"; .\GOS.ps1
+irm https://ltx0101.com/gos | iex
 ```
 
 ---
@@ -70,8 +70,8 @@ The script provides a range of optimization and maintenance options:
    Re-enables any services or settings disabled during optimization, restoring the system to its default state. A restart is recommended afterward.
 
 
-6. **Shortcut**  
-   Creates a Desktop GOS Shortcut.
+6. **Optimize Windows**  
+   Applies the latest and safest Windows optimizations.
 
  
 ## Requirements
