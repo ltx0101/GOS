@@ -61,15 +61,14 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "                                           GOS"
+$form.Text = "GOS"
 $form.ForeColor = [System.Drawing.Color]::White
-$form.Size = New-Object System.Drawing.Size(370, 300)
+$form.Size = New-Object System.Drawing.Size(370, 340)
 $form.StartPosition = "CenterScreen"
-$form.BackColor = [System.Drawing.Color]::FromArgb(25, 25, 25)
+$form.BackColor = [System.Drawing.Color]::FromArgb(46, 52, 64)
 $form.MaximizeBox = $false
 $form.MinimizeBox = $false
 $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
-$form.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon("https://github.com/ltx0101/GOS/blob/main/GOS.ico")
 $iconUrl = "https://github.com/ltx0101/GOS/raw/main/GOS.ico"
 $iconPath = "$env:Temp\GOS.ico"
 Invoke-WebRequest -Uri $iconUrl -OutFile $iconPath
@@ -80,60 +79,184 @@ function Show-Message($message) {
 }
 
 function Enable-GameMode {
-    
-    $services = @(
-    "AllJoyn Router Service", "BITS", "BitLocker Drive Encryption Service", "Bluetooth Support Service",
-    "BthAvctpSvc", "CertPropSvc", "Connected Devices Platform Service", "CscService", "DiagTrack",
-    "Diagnostic Policy Service", "Distributed Link Tracking Client", "Downloaded Maps Manager", "DPS",
-    "DusmSvc", "Fax", "Function Discovery Resource Publication",
-    "Geolocation Service", "icssvc", "LanmanServer", "lmhosts", "MapsBroker", "Microsoft iSCSI Initiator Service",
-    "Netlogon", "Offline Files", "Parental Controls", "Payments and NFC/SE Manager", "Phone Service",
-    "PhoneSvc", "Print Spooler", "Program Compatibility Assistant Service", "RemoteRegistry", "Retail Demo Service",
-    "RmSvc", "SCardSvr", "Secondary Logon", "SessionEnv", "SENS", "Smart Card", "Smart Card Device Enumeration Service",
-    "Spooler", "SSDPSRV", "stisvc", "Superfetch", "SysMain", "TabletInputService", "TermService",
-    "Touch Keyboard and Handwriting Panel Service", "UmRdpService", "UPnP Device Host", "UsoSvc",
-    "wercplsupport", "WerSvc", "WbioSrvc", "Windows Biometric Service", "Windows Camera Frame Server",
-    "Windows Error Reporting Service", "Windows Image Acquisition (WIA)", "Windows Insider Service",
-    "Windows Media Player Network Sharing Service", "Windows Search", "Windows Update", "WpcMonSvc",
-    "wuauserv", "Xbox Live Auth Manager",
-    "Xbox Live Game Save", "Xbox Live Networking Service", "Themes", "TrkWks", "FontCache", "DoSvc", "SENS",
-    "xboxgip", "xbgm", "XblGameSave", "XblAuthManager", "seclogon", "WSearch", "Tablet PC Input Service",
-    "WaaSMedicSvc", "TextInputManagementService", "WebBrowserInfrastructureService", "WpnService", "InstallService", "UsoSvc",
-    "ActiveX Installer", "AxInstSV", "Application Layer Gateway Service", "Auto Time Zone Updater", "Bluetooth Audio Gateway Service", "Bluetooth Support Service", "BranchCache",
-    "Capability Access Manager Service", "Cloud Backup and Restore Service", "Delivery Optimization", "Function Discovery Provider Host",
-    "Function Discovery Resource Publication", "Geolocation Service", "GraphicsPerfSvc", "Hyper-V Services", "Internet Connection Sharing (ICS)",
-    "Language Experience Service", "Microsoft Store Install Service", "Offline Files", "Performance Logs & Alerts", "Print Spooler", "Remote Access Auto Connection Manager", "QWAVE"
-    "vmickvpexchange", "vmicguestinterface", "vmicshutdown", "vmicheartbeat", "vmicvmsession", "vmicrdv", "vmictimesync", "vmicvss", "AppXSvc", "BDESVC", "Fax", "WaaSMedicSvc"
-    "wlidsvc", "LicenseManager", "AppXSvc" , "FontCache", "WpnService"
-)
 
-foreach ($service in $services) {
-    try {
-        Stop-Service -Name $service -ErrorAction Stop
-        Write-Output \"Stopped service: $service\"
-    } catch {
-        Write-Output \"Could not stop service: $service\"
+    $stopServices = @(
+        "AJRouter","AppReadiness","BDESVC","bthserv","BTAGService","BthAvctpSvc",
+        "CertPropSvc","CscService","DiagTrack","MapsBroker","lfsvc","Fax",
+        "PhoneSvc","RemoteRegistry","RetailDemo","SCardSvr","ScDeviceEnum",
+        "SSDPSRV","upnphost","WbioSrvc","WerSvc","wisvc","WMPNetworkSvc",
+        "XblAuthManager","XblGameSave","XboxNetApiSvc","XboxGipSvc","PcaSvc",
+        "TrkWks","DoSvc","QWAVE","SEMgrSvc","icssvc","PeerDistSvc",
+		"FrameServer","stisvc","TabletInputService","UsoSvc","Browser" ,
+		"SharedAccess","PimIndexMaintenanceSvc","ContactData","MessagingService" ,
+		"OneSyncSvc" ,"WalletService" ,"lfsvc","FDResPub","WerFaultSvc","CEIPService"
+    )
+
+    foreach ($svc in $stopServices) {
+        try {
+            Stop-Service $svc -ErrorAction Stop
+            Write-Output "Stopped service: $svc"
+        } catch {
+            Write-Output "Could not stop service: $svc"
+        }
     }
+
+    $disableServices = @(
+        "SSDPSRV","WbioSrvc","RemoteRegistry","wercplsupport","DPS","TermService",
+        "WpcMonSvc","DiagTrack","MapsBroker","wisvc","icssvc","CertPropSvc",
+        "PhoneSvc","BthAvctpSvc","lmhosts","WerSvc","RmSvc","DusmSvc",
+        "TabletInputService","RetailDemo"
+    )
+
+    foreach ($svc in $disableServices) {
+        try {
+            Set-Service $svc -StartupType Disabled -ErrorAction Stop
+        } catch {
+            Write-Output "Failed to disable service: $svc"
+        }
+    }
+
+    Clear-Host
+    Write-Host "Game Mode enabled!" -ForegroundColor Green
 }
 
-$servicesd = @(
-    "BITS","SysMain","SSDPSRV","WbioSrvc","RemoteRegistry",
-    "wercplsupport","DPS","TermService","WpcMonSvc","DiagTrack","MapsBroker","wisvc",
-    "icssvc","CertPropSvc","PhoneSvc","BthAvctpSvc","lmhosts","WerSvc","RmSvc",
-    "DusmSvc","TabletInputService","RetailDemo","wuauserv"
-)
 
-foreach ($serviced in $servicesd) {
-    try {
-        Set-Service -Name $serviced -StartupType Disabled -ErrorAction Stop
-    } catch {
-        Write-Output "Failed to disable service: $serviced"
+function Optimize-Win {
+[CmdletBinding()]
+param()
+
+process {
+
+    # Identify hardware profile
+    $sysInfo  = try { Get-CimInstance Win32_ComputerSystem -ErrorAction Stop } catch { $null }
+    $isLaptop = $sysInfo -and ($sysInfo.PCSystemType -eq 2)
+    $stepIndex = 0
+
+    function Write-StepProgress($name, $total) {
+        $script:stepIndex++
+        Write-Progress -Activity 'Optimizing Windows' `
+            -Status $name `
+            -PercentComplete (($script:stepIndex / $total) * 100)
     }
+
+    function Set-RegistryValueSafe {
+        param(
+            [string]$Path,
+            [string]$Name,
+            $Value,
+            [string]$Type
+        )
+        if (-not (Test-Path $Path)) {
+            New-Item -Path $Path -Force | Out-Null
+        }
+        Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -Force | Out-Null
+    }
+
+    function Enable-HAGS {
+        $gpuKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers'
+        $existing = Get-ItemProperty -Path $gpuKey -Name 'HwSchMode' -ErrorAction SilentlyContinue
+        if ($null -eq $existing) {
+            throw 'HAGS not supported on this GPU/driver combination.'
+        }
+        Set-RegistryValueSafe -Path $gpuKey -Name 'HwSchMode' -Value 2 -Type DWord
+    }
+
+    function Enable-GameMode {
+        $base = 'HKCU:\SOFTWARE\Microsoft\GameBar'
+        Set-RegistryValueSafe -Path $base -Name 'AllowAutoGameMode' -Value 1 -Type DWord
+        Set-RegistryValueSafe -Path $base -Name 'AutoGameModeEnabled' -Value 1 -Type DWord
+    }
+
+	function Set-PowerProfile {
+		if ($isLaptop) {
+			powercfg -setactive SCHEME_BALANCED
+			return
+		}
+
+		$ultimate = powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 2>$null
+
+		$guid = if ($ultimate) {
+			([regex]'([0-9a-fA-F-]{36})').Match($ultimate).Value
+		} else {
+			$list = powercfg -list
+			$match = $list | Select-String -Pattern 'Ultimate Performance'
+
+			if ($match) {
+				([regex]'([0-9a-fA-F-]{36})').Match($match.Line).Value
+			}
+		}
+
+		if (-not $guid) {
+			Write-Host "  [FAILED] Power Plan: could not determine GUID" -ForegroundColor Red
+			return
+		}
+
+		powercfg -setactive $guid
+	}
+
+    function Enable-TRIM {
+        $ssds = Get-PhysicalDisk -ErrorAction SilentlyContinue | Where-Object MediaType -eq 'SSD'
+        if (-not $ssds) {
+            throw 'No SSD detected; TRIM not applicable.'
+        }
+        fsutil behavior set DisableDeleteNotify 0 | Out-Null
+    }
+
+    function Enable-StorageSense {
+        Set-RegistryValueSafe `
+            -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy' `
+            -Name '01' -Value 1 -Type DWord
+    }
+
+    function Optimize-WindowedGames {
+        $base = 'HKCU:\System\GameConfigStore'
+        Set-RegistryValueSafe -Path $base -Name 'GameDVR_FSEBehaviorMode' -Value 2 -Type DWord
+        Set-RegistryValueSafe -Path $base -Name 'GameDVR_HonorUserFSEBehaviorMode' -Value 1 -Type DWord
+    }
+
+    function Test-VRR {
+        $gpu = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $gpu -or $gpu.Name -match 'Basic Display|Microsoft Basic') {
+            throw 'No modern GPU detected; VRR likely unavailable.'
+        }
+        Write-Host "VRR-capable hardware detected. Enable it in Windows Display settings if supported." -ForegroundColor DarkGray
+    }
+
+    function Set-FastStartup {
+        Set-RegistryValueSafe `
+            -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power' `
+            -Name 'HiberbootEnabled' -Value 0 -Type DWord
+    }
+
+    $tasks = @(
+        @{ Name = 'HAGS'; Action = { Enable-HAGS } },
+        @{ Name = 'Game Mode'; Action = { Enable-GameMode } },
+        @{ Name = 'Power Plan'; Action = { Set-PowerProfile } },
+        @{ Name = 'TRIM'; Action = { Enable-TRIM } },
+        @{ Name = 'Storage Sense'; Action = { Enable-StorageSense } },
+        @{ Name = 'Windowed Games'; Action = { Optimize-WindowedGames } },
+        @{ Name = 'VRR Check'; Action = { Test-VRR } },
+        @{ Name = 'Fast Startup'; Action = { Set-FastStartup } }
+    )
+
+    $total = $tasks.Count
+
+    foreach ($task in $tasks) {
+        Write-StepProgress $task.Name $total
+        try {
+            & $task.Action
+        }
+        catch {
+            Write-Host "  [FAILED] $($task.Name): $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+
+    Write-Progress -Activity 'Optimizing Windows' -Completed
 }
-New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TcpAckFrequency" -Value 1 -PropertyType DWord -Force
-New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TCPNoDelay" -Value 1 -PropertyType DWord -Force
-cls
-Write-Host "Game Mode enabled!" -ForegroundColor Green
+
+end {
+    Write-Host "Windows optimization complete. A restart is recommended." -ForegroundColor Green
+}
 }
 
 
@@ -169,15 +292,14 @@ if (Test-Path -Path $windowsUpdatePath) {
     Remove-Item -Path $windowsUpdatePath -Force -Recurse -ErrorAction SilentlyContinue
 }
 cleanmgr /verylowdisk
+
+    Write-Host "Cleanup complete!" -ForegroundColor Green
+    Write-Host "Note: Some caches will rebuild automatically." -ForegroundColor Yellow
+
 }
 
 
 function Optimize-Network {
-
-Stop-Service -Name "winnat" -Force -ErrorAction SilentlyContinue
-Start-Process -FilePath "reg.exe" -ArgumentList "add HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\DefaultMediaCost /v Ethernet /t REG_DWORD /d 2 /f" -Verb RunAs
-Start-Process -FilePath "reg.exe" -ArgumentList "add HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings /v EnableHttp2 /t REG_DWORD /d 1 /f" -Verb RunAs
-Start-Service -Name "winnat" -ErrorAction SilentlyContinue
 
 ipconfig /release
 ipconfig /renew
@@ -185,236 +307,201 @@ ipconfig /flushdns
 netsh int ip reset
 netsh winsock reset
 
-Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TcpAckFrequency" -ErrorAction SilentlyContinue
-Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -Name "TCPNoDelay" -ErrorAction SilentlyContinue
 cls
 Write-Host "Network optimization applied!" -ForegroundColor Green
 }
 
 
 function Repair-Windows {
-    Start-Process cmd.exe -ArgumentList "/K", "powershell.exe -Command ""taskkill /f /im explorer.exe; chkdsk /scan; DISM /Online /Cleanup-Image /RestoreHealth; sfc /scannow; shutdown /r /t 5; exit"""
-    cls
-    Write-Host "Your computer will automatically restart, this might take a while." -ForegroundColor Green
+
+    Write-Host "Starting system repair..." -ForegroundColor Cyan
+
+    Start-Process cmd.exe -ArgumentList "/c chkdsk /scan" -Wait
+
+    Start-Process cmd.exe -ArgumentList "/c DISM /Online /Cleanup-Image /RestoreHealth" -Wait
+
+    Start-Process cmd.exe -ArgumentList "/c sfc /scannow" -Wait
+
+    Write-Host "Repair complete. Restarting." -ForegroundColor Green
+
+    shutdown.exe /r /t 7
 }
 
 
 function Restore-Defaults {
-$servicesToStart = @(
-    "AllJoyn Router Service", "BITS", "BitLocker Drive Encryption Service", "Bluetooth Support Service",
-    "BthAvctpSvc", "CertPropSvc", "Connected Devices Platform Service", "CscService", "DiagTrack",
-    "Diagnostic Policy Service", "Distributed Link Tracking Client", "Downloaded Maps Manager", "DPS",
-    "DusmSvc", "Fax", "Function Discovery Resource Publication",
-    "Geolocation Service", "icssvc", "LanmanServer", "lmhosts", "MapsBroker", "Microsoft iSCSI Initiator Service",
-    "Netlogon", "Offline Files", "Parental Controls", "Payments and NFC/SE Manager", "Phone Service",
-    "PhoneSvc", "Print Spooler", "Program Compatibility Assistant Service", "RemoteRegistry", "Retail Demo Service",
-    "RmSvc", "SCardSvr", "Secondary Logon", "SessionEnv", "SENS", "Smart Card", "Smart Card Device Enumeration Service",
-    "Spooler", "SSDPSRV", "stisvc", "Superfetch", "SysMain", "TabletInputService", "TermService",
-    "Touch Keyboard and Handwriting Panel Service", "UmRdpService", "UPnP Device Host", "UsoSvc",
-    "wercplsupport", "WerSvc", "WbioSrvc", "Windows Biometric Service", "Windows Camera Frame Server",
-    "Windows Error Reporting Service", "Windows Image Acquisition (WIA)", "Windows Insider Service",
-    "Windows Media Player Network Sharing Service", "Windows Search", "Windows Update", "WpcMonSvc",
-    "wuauserv", "Xbox Live Auth Manager",
-    "Xbox Live Game Save", "Xbox Live Networking Service", "Themes", "TrkWks", "FontCache", "DoSvc", "SENS",
-    "xboxgip", "xbgm", "XblGameSave", "XblAuthManager", "seclogon", "WSearch", "Tablet PC Input Service",
-    "WaaSMedicSvc", "TextInputManagementService", "WebBrowserInfrastructureService", "WpnService", "InstallService", "UsoSvc",
-    "ActiveX Installer", "AxInstSV", "Application Layer Gateway Service", "Auto Time Zone Updater", "Bluetooth Audio Gateway Service", "Bluetooth Support Service", "BranchCache",
-    "Capability Access Manager Service", "Cloud Backup and Restore Service", "Delivery Optimization", "Function Discovery Provider Host",
-    "Function Discovery Resource Publication", "Geolocation Service", "GraphicsPerfSvc", "Hyper-V Services", "Internet Connection Sharing (ICS)",
-    "Language Experience Service", "Microsoft Store Install Service", "Offline Files", "Performance Logs & Alerts", "Print Spooler", "Remote Access Auto Connection Manager", "QWAVE"
-    "vmickvpexchange", "vmicguestinterface", "vmicshutdown", "vmicheartbeat", "vmicvmsession", "vmicrdv", "vmictimesync", "vmicvss", "AppXSvc", "BDESVC", "Fax", "WaaSMedicSvc"
-    "wlidsvc", "LicenseManager", "AppXSvc" , "FontCache", "WpnService"
-    )
-foreach ($service in $servicesToStart) {
-    try {
-        Start-Service -Name $service -ErrorAction Stop
-        Write-Host "Started service: $service"
-    } catch {
-        Write-Warning "Failed to start service: $service"
+
+    $services = @(
+	"AJRouter", "AppReadiness", "AppXSvc", "BDESVC", "BITS", "BTAGService", 
+    "BthAvctpSvc", "bthserv", "CertPropSvc", "CscService", "DiagTrack", 
+    "DoSvc", "DPS", "EventLog", "Fax", "FDResPub", "FontCache", "FrameServer", 
+    "icssvc", "InstallService", "LanmanServer", "lfsvc", "LicenseManager", 
+    "lmhosts", "MapsBroker", "PcaSvc", "PeerDistSvc", "PhoneSvc", "QWAVE", 
+    "RemoteRegistry", "RetailDemo", "SCardSvr", "ScDeviceEnum", "seclogon", 
+    "SEMgrSvc", "SENS", "Spooler", "SSDPSRV", "stisvc", "SysMain", 
+    "TabletInputService", "TermService", "Themes", "TrkWks", "upnphost", 
+    "UsoSvc", "WaaSMedicSvc", "WbioSrvc", "WerSvc", "wisvc", "WMPNetworkSvc", 
+    "WpnService", "WSearch", "wuauserv", "XblAuthManager", "XblGameSave", 
+    "XboxGipSvc", "XboxNetApiSvc"
+    ) | Sort-Object -Unique
+
+    foreach ($service in $services) {
+
+        $svc = Get-Service -Name $service -ErrorAction SilentlyContinue
+
+        if (-not $svc) {
+            Write-Host "Service not installed: $service" -ForegroundColor Yellow
+            continue
+        }
+
+        try {
+
+            if ($svc.StartType -eq "Disabled") {
+                Set-Service -Name $service -StartupType Manual
+            }
+
+            if ($svc.Status -ne "Running") {
+                Start-Service $service
+            }
+
+            Write-Host "OK  $service" -ForegroundColor Green
+
+        }
+        catch {
+            Write-Warning "Could not start $service"
+        }
     }
-}
 
-$servicesToConfigure = @(
-    "BITS", "SysMain", "SSDPSRV", "WSearch", "WbioSrvc", "Spooler", "RemoteRegistry",
-    "wercplsupport", "DPS", "TermService", "WpcMonSvc", "DiagTrack", "MapsBroker", "wisvc",
-    "icssvc", "CertPropSvc", "PhoneSvc", "BthAvctpSvc", "lmhosts", "WerSvc", "RmSvc",
-    "DusmSvc", "TabletInputService", "UsoSvc", "InstallService"
-)
-
-foreach ($service in $servicesToConfigure) {
-    try {
-        Set-Service -Name $service -StartupType Manual -ErrorAction Stop
-        Write-Host "Configured service to manual start: $service"
-    } catch {
-        Write-Warning "Failed to configure service: $service"
-    }
-}
-
-$restart = Read-Host "Would you like to restart your PC now? (Y/N)"
-if ($restart -eq "Y" -or $restart -eq "y") {
-    Write-Host "Restarting the computer..."
-    Restart-Computer -Force
-} else {
-    Write-Host "You can restart the PC later manually."
-}
-
-}
-
-function Shortcut {
-
-$ShortcutName = "GOS"
-$TargetCmd = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-
-$Arguments = @"
--ExecutionPolicy Bypass -Command "Start-Process powershell.exe -Verb RunAs -ArgumentList 'iwr `"https://raw.githubusercontent.com/ltx0101/GOS/refs/heads/main/GOS.ps1`" -OutFile `"GOS.ps1`"; .\GOS.ps1'"
-"@
-
-$ShortcutPath = "$([environment]::GetFolderPath('Desktop'))\$ShortcutName.lnk"
-$IconUrl = "https://raw.githubusercontent.com/ltx0101/GOS/main/GOS.ico"
-$IconPath = "$([environment]::GetFolderPath('MyDocuments'))\GOS.ico"
-Invoke-WebRequest -Uri $IconUrl -OutFile $IconPath -ErrorAction Stop
-$WshShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut($ShortcutPath)
-$Shortcut.TargetPath = $TargetCmd
-$Shortcut.Arguments = $Arguments
-$Shortcut.WorkingDirectory = $([environment]::GetFolderPath('UserProfile'))
-$Shortcut.WindowStyle = 1
-$Shortcut.Description = "Shortcut to execute GOS script"
-$Shortcut.IconLocation = $IconPath
-$Shortcut.Save()
-cls
-Write-Host "Shortcut GOS created on Desktop." -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Core Windows services restored." -ForegroundColor Green
 }
 
 function Debloat {
-cls
-$appsToRemove = @(
-    "Microsoft.3DBuilder", "Microsoft.Microsoft3DViewer", "Microsoft.AppConnector", "Microsoft.BingFinance", "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingWeather", "Microsoft.BingFoodAndDrink",
-"Microsoft.BingHealthAndFitness", "Microsoft.BingTravel", "Microsoft.MinecraftUWP", "Microsoft.GetHelp", "Microsoft.Getstarted", "Microsoft.MicrosoftSolitaireCollection", "Microsoft.NetworkSpeedTest", "Microsoft.News", "Microsoft.Office.Lens",
-"Microsoft.Office.Sway", "Microsoft.Office.OneNote", "Microsoft.OneConnect", "Microsoft.Office.Desktop", "Microsoft.Print3D", "Microsoft.SkypeApp", "Microsoft.Whiteboard", "Microsoft.WindowsFeedbackHub", "Microsoft.WindowsMaps",
-"Microsoft.MicrosoftOfficeHub", "Microsoft.XboxGameOverlay", "Microsoft.Xbox.TCUI", "Microsoft.XboxSpeechToTextOverlay", "Microsoft.XboxIdentityProvider", "Microsoft.XboxGameCallableUI", "Microsoft.MixedReality.Portal", "Microsoft.People",
-"Microsoft.WindowsAlarms", "Microsoft.WindowsSoundRecorder", "Microsoft.YourPhone", "Microsoft.ZuneMusic", "Microsoft.ZuneVideo", "Microsoft.WindowsStickyNotes", "*EclipseManager*", "*ActiproSoftwareLLC*", "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
-"*Duolingo-LearnLanguagesforFree*",  "*PandoraMediaInc*",  "*CandyCrush*",  "*BubbleWitch3Saga*",  "*Wunderlist*",  "*Flipboard*",  "*Twitter*",  "*Facebook*",  "*Royal Revolt*",  "*Sway*",  "*Speed Test*",  "*Dolby*",  "*Viber*",  "*ACGMediaPlayer*",  "*Netflix*",
-"*Roblox*", "*BytedancePte.Ltd.TikTok*", "*AmazonVideo.PrimeVideo*", "*MarchOfEmpires*", "*LinkedInforWindows*", "*HiddenCityMysteryofShadows*", "*Hulu*", "*HiddenCity*", "*SpotifyAB.SpotifyMusic*", "*AdobePhotoshopExpress*",
-"Microsoft.549981C3F5F10", "Disney.37853FC22B2CE", "MicrosoftTeams", "Microsoft.Todos", "Microsoft.GamingApp", "Microsoft.XboxGamingOverlay", "microsoft.windowscommunicationsapps"
+    cls
 
-)
+    $protectedApps = @(
+        "*WindowsStore*",
+        "*Microsoft.WindowsStore*",
+        "*SecHealthUI*",
+        "*Microsoft.Windows.SecHealthUI*",
+        "*Microsoft.SecHealthUI*",
+        "*Microsoft.WindowsTerminal*",
+        "*Microsoft.WindowsCalculator*",
+        "*Microsoft.WindowsNotepad*",
+        "*Microsoft.Paint*",
+        "*Microsoft.MSPaint*",
+        "*Microsoft.Windows.Photos*",
+        "*Microsoft.ScreenSketch*",
+        "*Microsoft.VCLibs*",
+        "*Microsoft.NET.Native*",
+        "*Microsoft.UI.Xaml*",
+        "*Microsoft.StorePurchaseApp*",
+        "*Microsoft.DesktopAppInstaller*"
+    )
 
-foreach ($app in $appsToRemove) {
-    $processes = Get-Process | Where-Object { $_.ProcessName -like "*$app*" }
-    if ($processes) {
-        Write-Host "Stopping process: $app"
-        $processes | Stop-Process -Force -ErrorAction SilentlyContinue
+    $appsToRemove = @(
+        "Microsoft.XboxApp",
+        "Microsoft.GamingApp",
+        "Microsoft.XboxGamingOverlay",
+        "Microsoft.XboxGameOverlay",
+        "Microsoft.Xbox.TCUI",
+        "Microsoft.XboxSpeechToTextOverlay",
+        "Microsoft.XboxIdentityProvider",
+        "Microsoft.XboxGameCallableUI",
+        "Microsoft.MinecraftUWP",
+        "king.com.CandyCrushSaga",
+        "king.com.CandyCrushSodaSaga",
+        "king.com.BubbleWitch3Saga",
+        "Microsoft.BingNews",
+        "Microsoft.BingWeather",
+        "Microsoft.BingFinance",
+        "Microsoft.BingSports",
+        "Microsoft.BingTranslator",
+        "Microsoft.BingFoodAndDrink",
+        "Microsoft.BingHealthAndFitness",
+        "Microsoft.BingTravel",
+        "Microsoft.MicrosoftSolitaireCollection",
+        "Microsoft.People",
+        "Microsoft.WindowsMaps",
+        "Microsoft.ZuneMusic",
+        "Microsoft.ZuneVideo",
+        "Microsoft.WindowsAlarms",
+        "Microsoft.WindowsSoundRecorder",
+        "Microsoft.YourPhone",
+        "Microsoft.Whiteboard",
+        "Microsoft.MixedReality.Portal",
+        "Microsoft.3DBuilder",
+        "Microsoft.Microsoft3DViewer",
+        "Microsoft.Print3D",
+        "Microsoft.GetHelp",
+        "Microsoft.Getstarted",
+        "Microsoft.WindowsFeedbackHub",
+        "Disney.37853FC22B2CE",
+        "SpotifyAB.SpotifyMusic",
+        "*Netflix*",
+        "*TikTok*",
+        "*Instagram*",
+        "microsoft.windowscommunicationsapps",
+        "Microsoft.SkypeApp",
+        "MicrosoftTeams",
+        "*WhatsApp*",
+        "Microsoft.MicrosoftOfficeHub",
+        "Microsoft.Office.OneNote",
+        "Microsoft.Office.Sway",
+        "Microsoft.Office.Lens",
+        "Microsoft.OneConnect",
+        "Microsoft.Todos",
+        "Microsoft.MicrosoftJournal",
+        "Microsoft.OutlookForWindows",
+        "*McAfee*",
+        "*Norton*",
+        "*CyberLink*",
+        "*Dell*Customer*Connect*",
+        "*Dell*SupportAssist*",
+        "*HP*Support*Assistant*",
+        "*Lenovo*Vantage*",
+        "*Wildtangent*",
+        "Microsoft.PowerAutomateDesktop",
+        "Microsoft.DevHome"
+    )
+
+    $appsToRemove = $appsToRemove | Where-Object {
+        $app = $_
+        -not ($protectedApps | Where-Object { $app -like $_ })
     }
-}
 
-foreach ($app in $appsToRemove) {
-    Write-Host "Removing AppxPackage: $app"
-    Get-AppxPackage -AllUsers | Where-Object { $_.Name -Like $app } | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
-}
+    foreach ($app in $appsToRemove) {
+        $processes = Get-Process -ErrorAction SilentlyContinue | Where-Object {
+            $_.ProcessName -like "*$app*"
+        }
 
-foreach ($app in $appsToRemove) {
-    Write-Host "Removing provisioned package: $app"
-    Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -Like $app } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
-}
-cls
-
-$hostsPath = "C:\Windows\System32\drivers\etc\hosts"
-$tempHostsPath = "$env:TEMP\hosts.tmp"
-
-Copy-Item -Path $hostsPath -Destination $tempHostsPath -Force
-$telemetryHosts = @(
-    "vortex.data.microsoft.com",
-    "settings-win.data.microsoft.com",
-    "watson.telemetry.microsoft.com",
-    "telemetry.microsoft.com",
-    "oca.telemetry.microsoft.com",
-    "sqm.telemetry.microsoft.com"
-)
-foreach ($telemetryHost in $telemetryHosts) {
-    Add-Content -Path $tempHostsPath -Value "127.0.0.1 $telemetryHost"
-}
-Copy-Item -Path $tempHostsPath -Destination $hostsPath -Force
-Remove-Item -Path $tempHostsPath -Force
-
-
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Force | Out-Null
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DoNotConnectToWindowsUpdateInternetLocations" -Type DWord -Value 1
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DisableWindowsUpdateAccess" -Type DWord -Value 1
-
-
-$tasksToDisable = @(
-    "\Microsoft\Windows\Customer Experience Improvement Program\Consolidator",
-    "\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip",
-    "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser",
-    "\Microsoft\Windows\Application Experience\ProgramDataUpdater"
-)
-foreach ($task in $tasksToDisable) {
-    if (Get-ScheduledTask -TaskPath $task -ErrorAction SilentlyContinue) {
-        Disable-ScheduledTask -TaskPath $task -ErrorAction SilentlyContinue
-    }
-}
-
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
-
-
-$servicesFileUrl = "https://raw.githubusercontent.com/ltx0101/GOS/main/Services%20list.txt"
-
-
-try {
-    $servicesContent = (Invoke-WebRequest -Uri $servicesFileUrl).Content -split "`r`n"
-} catch {
-    Write-Host "Failed to fetch service list: $($_.Exception.Message)"
-    exit
-}
-
-
-$serviceName = $null
-$startupType = $null
-
-
-foreach ($line in $servicesContent) {
-
-    $line = $line.Trim()
-
-    if ($line -match '^"([^"]+)",$') {
-        $serviceName = $matches[1]
-    }
-
-    elseif ($line -match '^"StartupType""([^"]+)",?$') {
-        $startupType = $matches[1]
-        
-
-        if ($serviceName -and $startupType) {
-            try {
-
-                Set-Service -Name $serviceName -StartupType $startupType
-                Write-Host "Successfully set $serviceName to $startupType"
-            } catch {
-                Write-Host ("Failed to set {0} to {1}: {2}" -f $serviceName, $startupType, $_.Exception.Message)
-            }
-            
-
-            $serviceName = $null
-            $startupType = $null
+        if ($processes) {
+            Write-Host "Stopping process: $app"
+            $processes | Stop-Process -Force -ErrorAction SilentlyContinue
         }
     }
+
+    foreach ($app in $appsToRemove) {
+        Write-Host "Removing AppxPackage: $app"
+
+        Get-AppxPackage -AllUsers |
+            Where-Object { $_.Name -like $app } |
+            Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+    }
+
+    foreach ($app in $appsToRemove) {
+        Write-Host "Removing provisioned package: $app"
+
+        Get-AppxProvisionedPackage -Online |
+            Where-Object { $_.DisplayName -like $app } |
+            Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+    }
+
+    cls
+    Write-Host "Bloatware removal complete." -ForegroundColor Green
 }
 
-Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-Start-Process explorer
-cls
-Write-Host " "
-Write-Host " "
-Write-Host "Windows Update has been optimized"
-Write-Host "Bloatware has been removed."
-Write-Host "Telemetry has been disabled."
-Write-Host "Debloat complete!" -ForegroundColor Green
-}
-
-# Game Mode Button
 $btnGameMode = New-Object System.Windows.Forms.Button
-$btnGameMode.Text = "Enable Game Mode " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0xA1))
+$btnGameMode.Text = "Enable Game Mode" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0xA1))
 $btnGameMode.Size = New-Object System.Drawing.Size(230, 40)
 $btnGameMode.Location = New-Object System.Drawing.Point(65, 20)
 $btnGameMode.Add_Click({ Enable-GameMode })
@@ -425,9 +512,8 @@ $tooltipGameMode = New-Object System.Windows.Forms.ToolTip
 $tooltipGameMode.SetToolTip($btnGameMode, "Click to enable Game Mode for better performance.")
 $btnGameMode.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 15, [System.Drawing.FontStyle]::Regular)
 
-# Clean Windows Button
 $btnClean = New-Object System.Windows.Forms.Button
-$btnClean.Text = "Clean Windows " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x97,0x91))
+$btnClean.Text = "Clean Windows" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x97,0x91))
 $btnClean.Size = New-Object System.Drawing.Size(150, 40)
 $btnClean.Location = New-Object System.Drawing.Point(10, 80)
 $btnClean.Add_Click({ Clean-Windows })
@@ -438,9 +524,8 @@ $tooltipClean = New-Object System.Windows.Forms.ToolTip
 $tooltipClean.SetToolTip($btnClean, "Click to clean Windows.")
 $btnClean.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
-# Network Optimization Button
 $btnNetwork = New-Object System.Windows.Forms.Button
-$btnNetwork.Text = "Optimize Network " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x8C,0x90))
+$btnNetwork.Text = "Optimize Network" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x8C,0x90))
 $btnNetwork.Size = New-Object System.Drawing.Size(150, 40)
 $btnNetwork.Location = New-Object System.Drawing.Point(10, 130)
 $btnNetwork.Add_Click({ Optimize-Network })
@@ -451,9 +536,8 @@ $tooltipNetwork = New-Object System.Windows.Forms.ToolTip
 $tooltipNetwork.SetToolTip($btnNetwork, "Click to optimize network settings.")
 $btnNetwork.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
-# Repair Windows Button
 $btnRepair = New-Object System.Windows.Forms.Button
-$btnRepair.Text = "Repair Windows " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x94,0xA7))
+$btnRepair.Text = "Repair Windows" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x94,0xA7))
 $btnRepair.Size = New-Object System.Drawing.Size(150, 40)
 $btnRepair.Location = New-Object System.Drawing.Point(195, 130)
 $btnRepair.Add_Click({ Repair-Windows })
@@ -464,9 +548,8 @@ $tooltipRepair = New-Object System.Windows.Forms.ToolTip
 $tooltipRepair.SetToolTip($btnRepair, "Click to repair Windows system files.")
 $btnRepair.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
-# Restore Defaults Button
 $btnRestore = New-Object System.Windows.Forms.Button
-$btnRestore.Text = "Restore Defaults " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0x99, 0xEF,0xB8,0x8F))
+$btnRestore.Text = "Restore Defaults" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0x99, 0xEF,0xB8,0x8F))
 $btnRestore.Size = New-Object System.Drawing.Size(150, 40)
 $btnRestore.Location = New-Object System.Drawing.Point(195, 80)
 $btnRestore.Add_Click({ Restore-Defaults })
@@ -477,22 +560,8 @@ $tooltipRestore = New-Object System.Windows.Forms.ToolTip
 $tooltipRestore.SetToolTip($btnRestore, "Click to restore default settings.")
 $btnRestore.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
-# Shortcut Button
-$btnShortcut = New-Object System.Windows.Forms.Button
-$btnShortcut.Text = "Shortcut " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x86,0xAA, 0xEF,0xB8,0x8F))
-$btnShortcut.Size = New-Object System.Drawing.Size(150, 40)
-$btnShortcut.Location = New-Object System.Drawing.Point(195, 180)
-$btnShortcut.Add_Click({ Shortcut })
-$btnShortcut.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnShortcut.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnShortcut.FlatAppearance.BorderSize = 0
-$tooltipShortcut = New-Object System.Windows.Forms.ToolTip
-$tooltipShortcut.SetToolTip($btnShortcut, "Click to create a shortcut.")
-$btnShortcut.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
-
-# Debloat Button
 $btnDebloat = New-Object System.Windows.Forms.Button
-$btnDebloat.Text = "Debloat " + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0xA7,0xB9))
+$btnDebloat.Text = "Debloat" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0xA7,0xB9))
 $btnDebloat.Size = New-Object System.Drawing.Size(150, 40)
 $btnDebloat.Location = New-Object System.Drawing.Point(10, 180)
 $btnDebloat.Add_Click({ Debloat })
@@ -503,29 +572,38 @@ $tooltipDebloat = New-Object System.Windows.Forms.ToolTip
 $tooltipDebloat.SetToolTip($btnDebloat, "Click to remove any Microsoft pre-installed Bloatware.")
 $btnDebloat.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
 
-# Processes Counter
+$btnWinOpt = New-Object System.Windows.Forms.Button
+$btnWinOpt.Text = "Windows Optimize" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x9A,0x80))
+$btnWinOpt.Size = New-Object System.Drawing.Size(150, 40)
+$btnWinOpt.Location = New-Object System.Drawing.Point(195, 180)
+$btnWinOpt.Add_Click({ Optimize-Win })
+$btnWinOpt.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$btnWinOpt.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
+$btnWinOpt.FlatAppearance.BorderSize = 0
+$tooltipWinOpt = New-Object System.Windows.Forms.ToolTip
+$tooltipWinOpt.SetToolTip($btnWinOpt, "Click to apply the latest Windows performance optimizations.")
+$btnWinOpt.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
+
 $proc = New-Object System.Windows.Forms.Label
 $proc.Text = "Processes Running:"
 $proc.AutoSize = $true
 $proc.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 8,[System.Drawing.FontStyle]::Regular)
-$proc.Location = New-Object System.Drawing.Point(120, 240)
+$proc.Location = New-Object System.Drawing.Point(120, 280)
 $Timer = New-Object System.Windows.Forms.Timer
-$Timer.Interval = 1000
+$Timer.Interval = 500
 $Timer.Add_Tick({
     $ProcessCount = (Get-Process | Measure-Object | Select-Object -ExpandProperty Count)
     $proc.Text = "Processes Running: $ProcessCount"
 })
 $Timer.Start()
 
-# Add buttons to the form
 $form.Controls.Add($btnGameMode)
 $form.Controls.Add($btnClean)
 $form.Controls.Add($btnNetwork)
 $form.Controls.Add($btnRepair)
 $form.Controls.Add($btnRestore)
-$form.Controls.Add($btnShortcut)
 $form.Controls.Add($btnDebloat)
+$form.Controls.Add($btnWinOpt)
 $form.Controls.Add($proc)
 
-# Run the form
 [void]$form.ShowDialog()
