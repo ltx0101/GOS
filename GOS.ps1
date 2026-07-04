@@ -3,9 +3,21 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit
 }
 
-$Host.UI.RawUI.ForegroundColor = "White"
-$Host.UI.RawUI.BackgroundColor = "Black"
-cls
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class Win32 {
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr GetConsoleWindow();
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+}
+"@
+$consolePtr = [Win32]::GetConsoleWindow()
+[Win32]::ShowWindow($consolePtr, 0) | Out-Null
+Start-Sleep -Milliseconds 100
+
 $ComputerName = $env:COMPUTERNAME
 $OS = Get-CimInstance Win32_OperatingSystem
 $CPU = Get-CimInstance Win32_Processor
@@ -19,66 +31,86 @@ $MemoryDevices = Get-CimInstance Win32_PhysicalMemory
 $Battery = Get-CimInstance Win32_Battery
 $SoundDevices = Get-CimInstance Win32_SoundDevice
 
-Write-Host "System Information for: $ComputerName" -ForegroundColor Green
-Write-Host "----------------------------------------"
-Write-Host "Operating System: $($OS.Caption) ($($OS.Version))"
-Write-Host " "
-Write-Host "CPU:" -ForegroundColor Yellow
-Write-Host "$($CPU.Name)"
-Write-Host " "
-Write-Host "Total RAM: $([math]::Round($RAM.TotalPhysicalMemory / 1GB, 2)) GB" -ForegroundColor Yellow
-foreach ($mem in $MemoryDevices) {
-    Write-Host "Memory Stick: $([math]::Round($mem.Capacity / 1GB, 2)) GB - Speed: $($mem.Speed) MHz"
-}
-Write-Host " "
-Write-Host "Graphics processing unit:" -ForegroundColor Yellow
-Write-Host "$($GPU.Name)"
-Write-Host " "
-Write-Host "Disk Space:" -ForegroundColor Yellow
-Write-Host "$([math]::Round($Disk.Size / 1GB, 2)) GB (Free: $([math]::Round($Disk.FreeSpace / 1GB, 2)) GB)"
-Write-Host " "
-Write-Host "Motherboard: $($Motherboard.Manufacturer) $($Motherboard.Product)" -ForegroundColor Yellow
-Write-Host "BIOS Version: $($BIOS.SMBIOSBIOSVersion)"
-Write-Host " "
-Write-Host "Battery Information:" -ForegroundColor Yellow
-if ($Battery) {
-    Write-Host "Battery Status: $($Battery.BatteryStatus) - Estimated Charge Remaining: $($Battery.EstimatedChargeRemaining)%"
-} else {
-    Write-Host "No battery detected."
-}
-Write-Host " "
-Write-Host "Sound Devices:" -ForegroundColor Yellow
-foreach ($sound in $SoundDevices) {
-    Write-Host "$($sound.Name)"
-}
-Write-Host " "
-Write-Host "Network Adapters:" -ForegroundColor Cyan
-foreach ($adapter in $IP) {
-    Write-Host "$($adapter.InterfaceAlias): $($adapter.IPAddress)"
-}
-
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+[System.Windows.Forms.Application]::EnableVisualStyles()
+
+$ColorBg = [System.Drawing.Color]::FromArgb(18, 18, 20)
+$ColorSurface = [System.Drawing.Color]::FromArgb(31, 31, 35)
+$ColorHeader = [System.Drawing.Color]::FromArgb(24, 24, 27)
+$ColorBorder = [System.Drawing.Color]::FromArgb(63, 63, 70)
+$ColorAccent = [System.Drawing.Color]::FromArgb(245, 158, 11)
+$ColorAccentHover = [System.Drawing.Color]::FromArgb(217, 119, 6)
+$ColorText = [System.Drawing.Color]::FromArgb(250, 250, 250)
+$ColorSubText = [System.Drawing.Color]::FromArgb(161, 161, 170)
+$ColorSuccess = [System.Drawing.Color]::FromArgb(52, 211, 153)
+$ColorWarning = [System.Drawing.Color]::FromArgb(251, 191, 36)
+$ColorError = [System.Drawing.Color]::FromArgb(248, 113, 113)
+
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "GOS"
-$form.ForeColor = [System.Drawing.Color]::White
-$form.Size = New-Object System.Drawing.Size(370, 340)
+$form.ClientSize = New-Object System.Drawing.Size(860, 720)
 $form.StartPosition = "CenterScreen"
-$form.BackColor = [System.Drawing.Color]::FromArgb(46, 52, 64)
+$form.BackColor = $ColorBg
+$form.ForeColor = $ColorText
+$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
 $form.MaximizeBox = $false
-$form.MinimizeBox = $false
-$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+$form.MinimizeBox = $true
+
 $iconUrl = "https://github.com/ltx0101/GOS/raw/main/GOS.ico"
 $iconPath = "$env:Temp\GOS.ico"
 Invoke-WebRequest -Uri $iconUrl -OutFile $iconPath
 $form.Icon = New-Object System.Drawing.Icon($iconPath)
 
-function Show-Message($message) {
-    [System.Windows.Forms.MessageBox]::Show($message, "GOS", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+
+function Set-StatusText {
+    param(
+        [string]$Text,
+        [ValidateSet("Ready","Working","Success","Warning","Error")]
+        [string]$State = "Ready"
+    )
+
+    $statusLabel.Text = "Status: $Text"
+
+    switch ($State) {
+        "Ready"   { $statusLabel.ForeColor = $ColorSuccess }
+        "Working" { $statusLabel.ForeColor = $ColorAccent }
+        "Success" { $statusLabel.ForeColor = $ColorSuccess }
+        "Warning" { $statusLabel.ForeColor = $ColorWarning }
+        "Error"   { $statusLabel.ForeColor = $ColorError }
+    }
+
+    $statusLabel.Refresh()
 }
 
-function Enable-GameMode {
+function Invoke-ActionSafely {
+    param(
+        [scriptblock]$Action,
+        [string]$ActionName
+    )
+    try {
+        Set-StatusText -Text "$ActionName in progress..." -State "Working"
+        $form.UseWaitCursor = $true
+        [System.Windows.Forms.Application]::DoEvents()
+        & $Action
+        Set-StatusText -Text "$ActionName completed." -State "Success"
+    }
+    catch {
+        Set-StatusText -Text "$ActionName failed." -State "Error"
+        [System.Windows.Forms.MessageBox]::Show(
+            "An error occurred while running '$ActionName':`r`n$($_.Exception.Message)",
+            "GOS",
+            [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Error
+        )
+    }
+    finally {
+        $form.UseWaitCursor = $false
+    }
+}
+
+function Enable-PerformanceMode {
 
     $stopServices = @(
         "AJRouter","AppReadiness","BDESVC","bthserv","BTAGService","BthAvctpSvc",
@@ -87,9 +119,13 @@ function Enable-GameMode {
         "SSDPSRV","upnphost","WbioSrvc","WerSvc","wisvc","WMPNetworkSvc",
         "XblAuthManager","XblGameSave","XboxNetApiSvc","XboxGipSvc","PcaSvc",
         "TrkWks","DoSvc","QWAVE","SEMgrSvc","icssvc","PeerDistSvc",
-		"FrameServer","stisvc","TabletInputService","UsoSvc","Browser" ,
-		"SharedAccess","PimIndexMaintenanceSvc","ContactData","MessagingService" ,
-		"OneSyncSvc" ,"WalletService" ,"lfsvc","FDResPub","WerFaultSvc","CEIPService"
+        "FrameServer","stisvc","TabletInputService",
+        "SharedAccess","PimIndexMaintenanceSvc","ContactData","MessagingService",
+        "OneSyncSvc","WalletService","lfsvc","FDResPub","WSearch",
+        "CDPSvc","Spooler","WpnService","TimeBrokerSvc",
+        "InventorySvc","whesvc","CloudBackupRestoreSvc",
+        "WinHttpAutoProxySvc","NgcSvc","NgcCtnrSvc","NPSMSvc",
+        "logi_lamparray_service","ShellHWDetection"
     )
 
     foreach ($svc in $stopServices) {
@@ -105,7 +141,7 @@ function Enable-GameMode {
         "SSDPSRV","WbioSrvc","RemoteRegistry","wercplsupport","DPS","TermService",
         "WpcMonSvc","DiagTrack","MapsBroker","wisvc","icssvc","CertPropSvc",
         "PhoneSvc","BthAvctpSvc","lmhosts","WerSvc","RmSvc","DusmSvc",
-        "TabletInputService","RetailDemo"
+        "TabletInputService","RetailDemo","CDPSvc","whesvc"
     )
 
     foreach ($svc in $disableServices) {
@@ -117,9 +153,8 @@ function Enable-GameMode {
     }
 
     Clear-Host
-    Write-Host "Game Mode enabled!" -ForegroundColor Green
+    Write-Host "Performance Mode enabled!" -ForegroundColor Green
 }
-
 
 function Optimize-Win {
 [CmdletBinding()]
@@ -127,7 +162,6 @@ param()
 
 process {
 
-    # Identify hardware profile
     $sysInfo  = try { Get-CimInstance Win32_ComputerSystem -ErrorAction Stop } catch { $null }
     $isLaptop = $sysInfo -and ($sysInfo.PCSystemType -eq 2)
     $stepIndex = 0
@@ -161,38 +195,38 @@ process {
         Set-RegistryValueSafe -Path $gpuKey -Name 'HwSchMode' -Value 2 -Type DWord
     }
 
-    function Enable-GameMode {
+    function Enable-PerformanceMode {
         $base = 'HKCU:\SOFTWARE\Microsoft\GameBar'
-        Set-RegistryValueSafe -Path $base -Name 'AllowAutoGameMode' -Value 1 -Type DWord
-        Set-RegistryValueSafe -Path $base -Name 'AutoGameModeEnabled' -Value 1 -Type DWord
+        Set-RegistryValueSafe -Path $base -Name 'AllowAutoPerformanceMode' -Value 1 -Type DWord
+        Set-RegistryValueSafe -Path $base -Name 'AutoPerformanceModeEnabled' -Value 1 -Type DWord
     }
 
-	function Set-PowerProfile {
-		if ($isLaptop) {
-			powercfg -setactive SCHEME_BALANCED
-			return
-		}
+    function Set-PowerProfile {
+        if ($isLaptop) {
+            powercfg -setactive SCHEME_BALANCED
+            return
+        }
 
-		$ultimate = powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 2>$null
+        $ultimate = powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 2>$null
 
-		$guid = if ($ultimate) {
-			([regex]'([0-9a-fA-F-]{36})').Match($ultimate).Value
-		} else {
-			$list = powercfg -list
-			$match = $list | Select-String -Pattern 'Ultimate Performance'
+        $guid = if ($ultimate) {
+            ([regex]'([0-9a-fA-F-]{36})').Match($ultimate).Value
+        } else {
+            $list = powercfg -list
+            $match = $list | Select-String -Pattern 'Ultimate Performance'
 
-			if ($match) {
-				([regex]'([0-9a-fA-F-]{36})').Match($match.Line).Value
-			}
-		}
+            if ($match) {
+                ([regex]'([0-9a-fA-F-]{36})').Match($match.Line).Value
+            }
+        }
 
-		if (-not $guid) {
-			Write-Host "  [FAILED] Power Plan: could not determine GUID" -ForegroundColor Red
-			return
-		}
+        if (-not $guid) {
+            Write-Host "  [FAILED] Power Plan: could not determine GUID" -ForegroundColor Red
+            return
+        }
 
-		powercfg -setactive $guid
-	}
+        powercfg -setactive $guid
+    }
 
     function Enable-TRIM {
         $ssds = Get-PhysicalDisk -ErrorAction SilentlyContinue | Where-Object MediaType -eq 'SSD'
@@ -230,7 +264,7 @@ process {
 
     $tasks = @(
         @{ Name = 'HAGS'; Action = { Enable-HAGS } },
-        @{ Name = 'Game Mode'; Action = { Enable-GameMode } },
+        @{ Name = 'Performance Mode'; Action = { Enable-PerformanceMode } },
         @{ Name = 'Power Plan'; Action = { Set-PowerProfile } },
         @{ Name = 'TRIM'; Action = { Enable-TRIM } },
         @{ Name = 'Storage Sense'; Action = { Enable-StorageSense } },
@@ -259,67 +293,61 @@ end {
 }
 }
 
-
 function Clean-Windows {
     $nvCachePath = "$env:temp\NVIDIA Corporation\NV_Cache"
-if (Test-Path -Path $nvCachePath) {
-    Remove-Item -Path "$nvCachePath\*" -Force -Recurse -ErrorAction SilentlyContinue
-    Get-ChildItem -Path $nvCachePath -Directory | ForEach-Object {
-        Remove-Item $_.FullName -Force -Recurse -ErrorAction SilentlyContinue
+    if (Test-Path -Path $nvCachePath) {
+        Remove-Item -Path "$nvCachePath\*" -Force -Recurse -ErrorAction SilentlyContinue
+        Get-ChildItem -Path $nvCachePath -Directory | ForEach-Object {
+            Remove-Item $_.FullName -Force -Recurse -ErrorAction SilentlyContinue
+        }
     }
-}
 
-$d3dCachePath = "$env:LOCALAPPDATA\D3DSCache"
-if (Test-Path -Path $d3dCachePath) {
-    Remove-Item -Path $d3dCachePath -Force -Recurse -ErrorAction SilentlyContinue
-}
-
-$tempPaths = @("$env:temp\*", "C:\Windows\temp\*", "C:\Windows\Prefetch\*")
-foreach ($path in $tempPaths) {
-    if (Test-Path -Path $path) {
-        Remove-Item -Path $path -Force -Recurse -ErrorAction SilentlyContinue
+    $d3dCachePath = "$env:LOCALAPPDATA\D3DSCache"
+    if (Test-Path -Path $d3dCachePath) {
+        Remove-Item -Path $d3dCachePath -Force -Recurse -ErrorAction SilentlyContinue
     }
-}
 
-$thumbCachePath = "$env:USERPROFILE\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete"
-if (Test-Path -Path $thumbCachePath) {
-    Remove-Item -Path "$thumbCachePath\*" -Force -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -Path $thumbCachePath -Force -Recurse -ErrorAction SilentlyContinue
-}
+    $tempPaths = @("$env:temp\*", "C:\Windows\temp\*", "C:\Windows\Prefetch\*")
+    foreach ($path in $tempPaths) {
+        if (Test-Path -Path $path) {
+            Remove-Item -Path $path -Force -Recurse -ErrorAction SilentlyContinue
+        }
+    }
 
-$windowsUpdatePath = "C:\Windows\SoftwareDistribution\Download\*"
-if (Test-Path -Path $windowsUpdatePath) {
-    Remove-Item -Path $windowsUpdatePath -Force -Recurse -ErrorAction SilentlyContinue
-}
-cleanmgr /verylowdisk
+    $thumbCachePath = "$env:USERPROFILE\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete"
+    if (Test-Path -Path $thumbCachePath) {
+        Remove-Item -Path "$thumbCachePath\*" -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item -Path $thumbCachePath -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
+    $windowsUpdatePath = "C:\Windows\SoftwareDistribution\Download\*"
+    if (Test-Path -Path $windowsUpdatePath) {
+        Remove-Item -Path $windowsUpdatePath -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
+    cleanmgr /verylowdisk
 
     Write-Host "Cleanup complete!" -ForegroundColor Green
     Write-Host "Note: Some caches will rebuild automatically." -ForegroundColor Yellow
-
 }
-
 
 function Optimize-Network {
+    ipconfig /release
+    ipconfig /renew
+    ipconfig /flushdns
+    netsh int ip reset
+    netsh winsock reset
 
-ipconfig /release
-ipconfig /renew
-ipconfig /flushdns
-netsh int ip reset
-netsh winsock reset
-
-cls
-Write-Host "Network optimization applied!" -ForegroundColor Green
+    cls
+    Write-Host "Network optimization applied!" -ForegroundColor Green
 }
-
 
 function Repair-Windows {
 
     Write-Host "Starting system repair..." -ForegroundColor Cyan
 
     Start-Process cmd.exe -ArgumentList "/c chkdsk /scan" -Wait
-
     Start-Process cmd.exe -ArgumentList "/c DISM /Online /Cleanup-Image /RestoreHealth" -Wait
-
     Start-Process cmd.exe -ArgumentList "/c sfc /scannow" -Wait
 
     Write-Host "Repair complete. Restarting." -ForegroundColor Green
@@ -327,25 +355,27 @@ function Repair-Windows {
     shutdown.exe /r /t 7
 }
 
-
 function Restore-Defaults {
 
     $services = @(
-	"AJRouter", "AppReadiness", "AppXSvc", "BDESVC", "BITS", "BTAGService", 
-    "BthAvctpSvc", "bthserv", "CertPropSvc", "CscService", "DiagTrack", 
-    "DoSvc", "DPS", "EventLog", "Fax", "FDResPub", "FontCache", "FrameServer", 
-    "icssvc", "InstallService", "LanmanServer", "lfsvc", "LicenseManager", 
-    "lmhosts", "MapsBroker", "PcaSvc", "PeerDistSvc", "PhoneSvc", "QWAVE", 
-    "RemoteRegistry", "RetailDemo", "SCardSvr", "ScDeviceEnum", "seclogon", 
-    "SEMgrSvc", "SENS", "Spooler", "SSDPSRV", "stisvc", "SysMain", 
-    "TabletInputService", "TermService", "Themes", "TrkWks", "upnphost", 
-    "UsoSvc", "WaaSMedicSvc", "WbioSrvc", "WerSvc", "wisvc", "WMPNetworkSvc", 
-    "WpnService", "WSearch", "wuauserv", "XblAuthManager", "XblGameSave", 
-    "XboxGipSvc", "XboxNetApiSvc"
+		"AJRouter","AppReadiness","BDESVC","bthserv","BTAGService","BthAvctpSvc",
+		"CertPropSvc","CscService","DiagTrack","MapsBroker","lfsvc","Fax","PhoneSvc",
+		"RemoteRegistry","RetailDemo","SCardSvr","ScDeviceEnum","SSDPSRV","upnphost",
+		"WbioSrvc","WerSvc","wisvc","WMPNetworkSvc","XblAuthManager","XblGameSave",
+		"XboxNetApiSvc","XboxGipSvc","PcaSvc","TrkWks","DoSvc","QWAVE","SEMgrSvc",
+		"icssvc","PeerDistSvc","FrameServer","stisvc","TabletInputService","SharedAccess",
+		"PimIndexMaintenanceSvc","ContactData","MessagingService","OneSyncSvc",
+		"WalletService","lfsvc","FDResPub","WSearch","CDPSvc","Spooler","WpnService",
+		"TimeBrokerSvc","InventorySvc","whesvc","CloudBackupRestoreSvc",
+		"WinHttpAutoProxySvc","NgcSvc","NgcCtnrSvc","NPSMSvc","logi_lamparray_service",
+		"ShellHWDetection","SSDPSRV","WbioSrvc","RemoteRegistry","wercplsupport",
+		"DPS","TermService","WpcMonSvc","DiagTrack","MapsBroker","wisvc","icssvc",
+		"CertPropSvc","PhoneSvc","BthAvctpSvc","lmhosts","WerSvc","RmSvc","DusmSvc",
+		"TabletInputService","RetailDemo","CDPSvc","whesvc"
+
     ) | Sort-Object -Unique
 
     foreach ($service in $services) {
-
         $svc = Get-Service -Name $service -ErrorAction SilentlyContinue
 
         if (-not $svc) {
@@ -354,9 +384,8 @@ function Restore-Defaults {
         }
 
         try {
-
             if ($svc.StartType -eq "Disabled") {
-                Set-Service -Name $service -StartupType Manual
+                Set-Service -Name $service -StartupType Automatic
             }
 
             if ($svc.Status -ne "Running") {
@@ -364,7 +393,6 @@ function Restore-Defaults {
             }
 
             Write-Host "OK  $service" -ForegroundColor Green
-
         }
         catch {
             Write-Warning "Could not start $service"
@@ -406,7 +434,6 @@ function Debloat {
         "Microsoft.Xbox.TCUI",
         "Microsoft.XboxSpeechToTextOverlay",
         "Microsoft.XboxIdentityProvider",
-        "Microsoft.XboxGameCallableUI",
         "Microsoft.MinecraftUWP",
         "king.com.CandyCrushSaga",
         "king.com.CandyCrushSodaSaga",
@@ -500,95 +527,145 @@ function Debloat {
     Write-Host "Bloatware removal complete." -ForegroundColor Green
 }
 
-$btnGameMode = New-Object System.Windows.Forms.Button
-$btnGameMode.Text = "Enable Game Mode" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0xA1))
-$btnGameMode.Size = New-Object System.Drawing.Size(230, 40)
-$btnGameMode.Location = New-Object System.Drawing.Point(65, 20)
-$btnGameMode.Add_Click({ Enable-GameMode })
-$btnGameMode.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnGameMode.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnGameMode.FlatAppearance.BorderSize = 0
-$tooltipGameMode = New-Object System.Windows.Forms.ToolTip
-$tooltipGameMode.SetToolTip($btnGameMode, "Click to enable Game Mode for better performance.")
-$btnGameMode.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 15, [System.Drawing.FontStyle]::Regular)
+function New-ModernButton {
+    param(
+        [string]$Text,
+        [int]$X,
+        [int]$Y,
+        [int]$Width = 210,
+        [int]$Height = 52,
+        [scriptblock]$OnClick,
+        [string]$Tooltip = "",
+        [bool]$IsPrimary = $false
+    )
 
-$btnClean = New-Object System.Windows.Forms.Button
-$btnClean.Text = "Clean Windows" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x97,0x91))
-$btnClean.Size = New-Object System.Drawing.Size(150, 40)
-$btnClean.Location = New-Object System.Drawing.Point(10, 80)
-$btnClean.Add_Click({ Clean-Windows })
-$btnClean.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnClean.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnClean.FlatAppearance.BorderSize = 0
-$tooltipClean = New-Object System.Windows.Forms.ToolTip
-$tooltipClean.SetToolTip($btnClean, "Click to clean Windows.")
-$btnClean.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
+    $btn = New-Object System.Windows.Forms.Button
+    $btn.Text = $Text
+    $btn.Size = New-Object System.Drawing.Size($Width, $Height)
+    $btn.Location = New-Object System.Drawing.Point($X, $Y)
+    $btn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $btn.FlatAppearance.BorderSize = 1
+    $btn.FlatAppearance.BorderColor = $ColorBorder
+    $btn.BackColor = if ($IsPrimary) { $ColorAccent } else { $ColorSurface }
+    $btn.ForeColor = $ColorText
+    $btn.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btn.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $btn.UseVisualStyleBackColor = $false
 
-$btnNetwork = New-Object System.Windows.Forms.Button
-$btnNetwork.Text = "Optimize Network" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x8C,0x90))
-$btnNetwork.Size = New-Object System.Drawing.Size(150, 40)
-$btnNetwork.Location = New-Object System.Drawing.Point(10, 130)
-$btnNetwork.Add_Click({ Optimize-Network })
-$btnNetwork.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnNetwork.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnNetwork.FlatAppearance.BorderSize = 0
-$tooltipNetwork = New-Object System.Windows.Forms.ToolTip
-$tooltipNetwork.SetToolTip($btnNetwork, "Click to optimize network settings.")
-$btnNetwork.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
+    $btn.Add_MouseEnter({
+        if ($this.BackColor -eq $ColorAccent) {
+            $this.BackColor = $ColorAccentHover
+        }
+        else {
+            $this.BackColor = [System.Drawing.Color]::FromArgb(40, 55, 80)
+        }
+    })
 
-$btnRepair = New-Object System.Windows.Forms.Button
-$btnRepair.Text = "Repair Windows" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x94,0xA7))
-$btnRepair.Size = New-Object System.Drawing.Size(150, 40)
-$btnRepair.Location = New-Object System.Drawing.Point(195, 130)
-$btnRepair.Add_Click({ Repair-Windows })
-$btnRepair.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnRepair.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnRepair.FlatAppearance.BorderSize = 0
-$tooltipRepair = New-Object System.Windows.Forms.ToolTip
-$tooltipRepair.SetToolTip($btnRepair, "Click to repair Windows system files.")
-$btnRepair.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
+    $btn.Add_MouseLeave({
+        if ($IsPrimary) {
+            $this.BackColor = $ColorAccent
+        }
+        else {
+            $this.BackColor = $ColorSurface
+        }
+    })
 
-$btnRestore = New-Object System.Windows.Forms.Button
-$btnRestore.Text = "Restore Defaults" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xE2,0x9A,0x99, 0xEF,0xB8,0x8F))
-$btnRestore.Size = New-Object System.Drawing.Size(150, 40)
-$btnRestore.Location = New-Object System.Drawing.Point(195, 80)
-$btnRestore.Add_Click({ Restore-Defaults })
-$btnRestore.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnRestore.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnRestore.FlatAppearance.BorderSize = 0
-$tooltipRestore = New-Object System.Windows.Forms.ToolTip
-$tooltipRestore.SetToolTip($btnRestore, "Click to restore default settings.")
-$btnRestore.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
+    if ($OnClick) {
+        $btn.Add_Click($OnClick)
+    }
 
-$btnDebloat = New-Object System.Windows.Forms.Button
-$btnDebloat.Text = "Debloat" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0xA7,0xB9))
-$btnDebloat.Size = New-Object System.Drawing.Size(150, 40)
-$btnDebloat.Location = New-Object System.Drawing.Point(10, 180)
-$btnDebloat.Add_Click({ Debloat })
-$btnDebloat.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnDebloat.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnDebloat.FlatAppearance.BorderSize = 0
-$tooltipDebloat = New-Object System.Windows.Forms.ToolTip
-$tooltipDebloat.SetToolTip($btnDebloat, "Click to remove any Microsoft pre-installed Bloatware.")
-$btnDebloat.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
+    if ($Tooltip -ne "") {
+        $tt = New-Object System.Windows.Forms.ToolTip
+        $tt.BackColor = $ColorSurface
+        $tt.ForeColor = $ColorText
+        $tt.SetToolTip($btn, $Tooltip)
+    }
 
-$btnWinOpt = New-Object System.Windows.Forms.Button
-$btnWinOpt.Text = "Windows Optimize" + [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xF0,0x9F,0x9A,0x80))
-$btnWinOpt.Size = New-Object System.Drawing.Size(150, 40)
-$btnWinOpt.Location = New-Object System.Drawing.Point(195, 180)
-$btnWinOpt.Add_Click({ Optimize-Win })
-$btnWinOpt.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnWinOpt.FlatAppearance.BorderColor = [System.Drawing.Color]::Black
-$btnWinOpt.FlatAppearance.BorderSize = 0
-$tooltipWinOpt = New-Object System.Windows.Forms.ToolTip
-$tooltipWinOpt.SetToolTip($btnWinOpt, "Click to apply the latest Windows performance optimizations.")
-$btnWinOpt.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 10, [System.Drawing.FontStyle]::Regular)
+    return $btn
+}
+
+$headerPanel = New-Object System.Windows.Forms.Panel
+$headerPanel.Size = New-Object System.Drawing.Size(860, 110)
+$headerPanel.Location = New-Object System.Drawing.Point(0, 0)
+$headerPanel.BackColor = $ColorHeader
+
+$titleLabel = New-Object System.Windows.Forms.Label
+$titleLabel.Text = "GOS"
+$titleLabel.Font = New-Object System.Drawing.Font("Segoe UI Semibold", 26)
+$titleLabel.ForeColor = $ColorText
+$titleLabel.AutoSize = $true
+$titleLabel.Location = New-Object System.Drawing.Point(25, 20)
+
+$subtitleLabel = New-Object System.Windows.Forms.Label
+$subtitleLabel.Text = "Windows Optimization Toolkit"
+$subtitleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+$subtitleLabel.ForeColor = $ColorSubText
+$subtitleLabel.AutoSize = $true
+$subtitleLabel.Location = New-Object System.Drawing.Point(27, 75)
+
+$separator = New-Object System.Windows.Forms.Panel
+$separator.Size = New-Object System.Drawing.Size(860, 1)
+$separator.Location = New-Object System.Drawing.Point(0, 109)
+$separator.BackColor = $ColorBorder
+
+$headerPanel.Controls.Add($titleLabel)
+$headerPanel.Controls.Add($subtitleLabel)
+$headerPanel.Controls.Add($separator)
+
+$actionsLabel = New-Object System.Windows.Forms.Label
+$actionsLabel.Text = "Actions"
+$actionsLabel.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$actionsLabel.ForeColor = $ColorText
+$actionsLabel.AutoSize = $true
+$actionsLabel.Location = New-Object System.Drawing.Point(20, 120)
+
+$btnPerformanceMode = New-ModernButton -Text "Enable Performance Mode" -X 20 -Y 155 -Width 340 -Height 56 -Tooltip "Click to enable Performance Mode for better performance." -OnClick {
+    Invoke-ActionSafely -Action { Enable-PerformanceMode } -ActionName "Enable Performance Mode"
+}
+
+$btnWinOpt = New-ModernButton -Text "Windows Optimize" -X 20 -Y 225 -Width 340 -Height 56 -Tooltip "Click to apply the latest Windows performance optimizations." -OnClick {
+    Invoke-ActionSafely -Action { Optimize-Win } -ActionName "Windows Optimize"
+}
+
+$btnNetwork = New-ModernButton -Text "Optimize Network" -X 20 -Y 295 -Width 340 -Height 56 -Tooltip "Click to optimize network settings." -OnClick {
+    Invoke-ActionSafely -Action { Optimize-Network } -ActionName "Optimize Network"
+}
+
+$btnDebloat = New-ModernButton -Text "Debloat" -X 20 -Y 365 -Width 340 -Height 56 -Tooltip "Click to remove any Microsoft pre-installed Bloatware." -OnClick {
+    Invoke-ActionSafely -Action { Debloat } -ActionName "Debloat"
+}
+
+$btnClean = New-ModernButton -Text "Clean Windows" -X 20 -Y 435 -Width 340 -Height 56 -Tooltip "Click to clean Windows." -OnClick {
+    Invoke-ActionSafely -Action { Clean-Windows } -ActionName "Clean Windows"
+}
+
+$btnRepair = New-ModernButton -Text "Repair Windows" -X 20 -Y 505 -Width 340 -Height 56 -Tooltip "Click to repair Windows system files." -OnClick {
+    Invoke-ActionSafely -Action { Repair-Windows } -ActionName "Repair Windows"
+}
+
+$btnRestore = New-ModernButton -Text "Restore Defaults" -X 20 -Y 575 -Width 340 -Height 56 -Tooltip "Click to restore default settings." -OnClick {
+    Invoke-ActionSafely -Action { Restore-Defaults } -ActionName "Restore Defaults"
+}
+
+$footerPanel = New-Object System.Windows.Forms.Panel
+$footerPanel.Size = New-Object System.Drawing.Size(860, 30)
+$footerPanel.Location = New-Object System.Drawing.Point(0, 690)
+$footerPanel.BackColor = $ColorHeader
+
+$statusLabel = New-Object System.Windows.Forms.Label
+$statusLabel.Text = "Status: Ready"
+$statusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$statusLabel.ForeColor = $ColorSuccess
+$statusLabel.AutoSize = $true
+$statusLabel.Location = New-Object System.Drawing.Point(20, 5)
 
 $proc = New-Object System.Windows.Forms.Label
-$proc.Text = "Processes Running:"
+$proc.Text = "Processes Running: "
 $proc.AutoSize = $true
-$proc.Font = New-Object System.Drawing.Font("Segoe UI Emoji", 8,[System.Drawing.FontStyle]::Regular)
-$proc.Location = New-Object System.Drawing.Point(120, 280)
+$proc.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$proc.ForeColor = $ColorText
+$proc.Location = New-Object System.Drawing.Point(455, 5)
+
 $Timer = New-Object System.Windows.Forms.Timer
 $Timer.Interval = 500
 $Timer.Add_Tick({
@@ -597,13 +674,75 @@ $Timer.Add_Tick({
 })
 $Timer.Start()
 
-$form.Controls.Add($btnGameMode)
+$footerPanel.Controls.Add($statusLabel)
+$footerPanel.Controls.Add($proc)
+
+$textBox = New-Object System.Windows.Forms.TextBox
+$textBox.Multiline = $true
+$textBox.ReadOnly = $true
+$textBox.BackColor = $ColorBg
+$textBox.ForeColor = $ColorText
+$textBox.BorderStyle = "None"
+$textBox.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+$textBox.Location = New-Object System.Drawing.Point(450, 155)
+$textBox.Size = New-Object System.Drawing.Size(330, 490)
+
+$output = @()
+
+$output += "Computer Name: $ComputerName"
+$output += ""
+$output += "Operating System: $($OS.Caption) ($($OS.Version))"
+$output += ""
+
+$output += "CPU Model: $($CPU.Name)"
+$output += "CPU Total Cores: = $($CPU.NumberOfCores)"
+$output += "CPU Total Threads: = $($CPU.NumberOfLogicalProcessors)"
+$output += ""
+
+$output += "Graphics processing unit: $($GPU.Name)"
+$output += ""
+
+$output += "Total RAM: $([math]::Round($RAM.TotalPhysicalMemory / 1GB, 2)) GB"
+foreach ($mem in $MemoryDevices) {
+    $output += "Memory Stick: $([math]::Round($mem.Capacity / 1GB, 2)) GB - Speed: $($mem.Speed) MHz"
+}
+$output += ""
+
+$output += "Disk Space: $([math]::Round($Disk.Size / 1GB, 2)) GB (Free: $([math]::Round($Disk.FreeSpace / 1GB, 2)) GB)"
+$output += ""
+
+$output += "Motherboard: $($Motherboard.Manufacturer) $($Motherboard.Product)"
+$output += "BIOS Version: $($BIOS.SMBIOSBIOSVersion)"
+$output += ""
+
+$output += "Sound Devices:"
+foreach ($sound in $SoundDevices) {
+    $output += "$($sound.Name)"
+}
+$output += ""
+
+$output += "Network Adapters:"
+foreach ($adapter in $IP) {
+    $output += "$($adapter.InterfaceAlias): $($adapter.IPAddress)"
+}
+
+$textBox.Text = ($output -join "`r`n")
+
+$form.Controls.Add($textBox)
+$form.Add_Shown({
+    $form.Activate()
+    $form.ActiveControl = $null
+})
+
+$form.Controls.Add($headerPanel)
+$form.Controls.Add($actionsLabel)
+$form.Controls.Add($btnPerformanceMode)
+$form.Controls.Add($btnRestore)
 $form.Controls.Add($btnClean)
 $form.Controls.Add($btnNetwork)
 $form.Controls.Add($btnRepair)
-$form.Controls.Add($btnRestore)
 $form.Controls.Add($btnDebloat)
 $form.Controls.Add($btnWinOpt)
-$form.Controls.Add($proc)
+$form.Controls.Add($footerPanel)
 
 [void]$form.ShowDialog()
